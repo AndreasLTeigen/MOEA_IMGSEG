@@ -1,8 +1,8 @@
 import java.util.List;
 
 public class Pixel {
-    public float color;
-    public int x;
-    public int y;
-    public List<Pixel> neighbours;
+    public float r, g, b;
+    public int row;
+    public int col;
+    //public List<Pixel> neighbours;
 }
