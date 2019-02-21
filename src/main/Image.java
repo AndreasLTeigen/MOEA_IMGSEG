@@ -10,6 +10,7 @@ public class Image {
         this.pixels = pixels;
     }
 
+
     public int getWidth() {
         return pixels.size() == 0 ? 0: pixels.get(0).size();
     }

@@ -35,7 +35,6 @@ public class GeneticSolver {
                 //crossedChildren = cross.crossover();
             }
 
-
             ++iteration;
         }
 
