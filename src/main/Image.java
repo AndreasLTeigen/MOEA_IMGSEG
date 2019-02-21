@@ -1,7 +1,5 @@
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+package main;
+
 import java.util.List;
 
 public class Image {
@@ -12,8 +10,14 @@ public class Image {
         this.pixels = pixels;
     }
 
-    public Pixel getPixel(int row, int col) {
-        return null;
+    public int getWidth() {
+        return pixels.size() == 0 ? 0: pixels.get(0).size();
+    }
+    public int getHeight() {
+        return pixels.size();
+    }
+    public Pixel getPixel(int x, int y) {
+        return pixels.get(y).get(x);
     }
 
     /**
@@ -26,7 +30,7 @@ public class Image {
         return getNeighbours(p.row, p.col);
     }
 
-    public void show() {
-
+    public List<List<Pixel>> getPixels() {
+        return pixels;
     }
 }
