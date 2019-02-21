@@ -4,6 +4,17 @@ public class Main{
     public static void main(String[] args){
 
         Image img = ImageUtils.loadImage("images/86016/Test image.jpg");
-        ImageUtils.drawImage(img);
+        Problem p = new Problem(img);
+
+//        ImageUtils.drawImage(img);
+
+        long startTime = System.currentTimeMillis();
+        Population pop = new RandomPopulationInitializer().initPopulation(p, 100);
+        System.out.println("time to create a solution: "+ ((double)(System.currentTimeMillis() - startTime))/1000.0/100.0);
+        int i = 0;
+        for (Chromosome c : pop) {
+            if (i++ % 20 == 0)
+                ImageUtils.drawSegmentation(c.segmentation);
+        }
     }
 }

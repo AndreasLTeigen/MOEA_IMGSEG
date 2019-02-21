@@ -20,7 +20,7 @@ public class Segmentation {
             ArrayList<SegLabel> row = new ArrayList<>();
 
             for (int x = 0; x < width; x++) {
-                row.add(new SegLabel(x, y, 0));
+                row.add(new SegLabel(x, y, -1));
             }
 
             segmentation.add(row);
@@ -58,6 +58,10 @@ public class Segmentation {
         }
         return neighbours;
     }
+    public List<SegLabel> getNeighbours(SegLabel slabel) {
+        return getNeighbours(slabel.x, slabel.y);
+    }
+
     public int getLabelValue(int x, int y) {
         return getLabel(x, y).label;
     }
