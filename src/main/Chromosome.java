@@ -15,4 +15,7 @@ public class Chromosome {
         this.segmentation = new Segmentation(img);
         this.img = img;
     }
+
+
 }
+
