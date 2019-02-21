@@ -1,7 +1,10 @@
 package main;
 
+import utils.Utils;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.File;
@@ -44,6 +47,33 @@ public class ImageUtils {
         }
 
         return new Image(pixels);
+    }
+
+    private static Color[] ColorArray = {Color.black, Color.blue, Color.cyan, Color.darkGray, Color.gray, Color.green, Color.lightGray, Color.magenta, Color.orange, Color.pink, Color.red, Color.white, Color.yellow};
+
+    public static void drawSegmentation(Segmentation seg) {
+        List<List<Pixel>> pixels = new ArrayList<>(seg.getHeight());
+        for (int y = 0; y < seg.getHeight(); y++) {
+            List<Pixel> row = new ArrayList<>(seg.getWidth());
+
+            for (int x = 0; x < seg.getWidth(); x++) {
+                SegLabel sl = seg.getLabel(x, y);
+                int l = sl.label;
+
+                int colorInd = l % ColorArray.length;
+                Color c = ColorArray[colorInd];
+                //ColorArray[colorInd] = ColorArray[colorInd].brighter();
+
+                float r = c.getRed() / rgbMaxVal;
+                float g = c.getGreen() / rgbMaxVal;
+                float b = c.getBlue() / rgbMaxVal;
+                Pixel p = new Pixel(r, g, b, y, x);
+                row.add(p);
+            }
+            pixels.add(row);
+        }
+        Image img =  new Image(pixels);
+        drawImage(img);
     }
 
     public static void drawImage(Image img) {
