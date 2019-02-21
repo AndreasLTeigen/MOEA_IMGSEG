@@ -1,6 +1,7 @@
 package solver;
 
 import main.Population;
+import main.Problem;
 import solver.*;
 
 import java.util.Collections;
@@ -15,14 +16,14 @@ public class GeneticSolver {
     protected List<Mutation> mutations;
     protected TerminateCondition terminateCondition;
 
-    public void solve() {
+    public void solve(Problem p) {
 
         Population pop = null;
         Population parents = null;
         Population crossedChildren = null;
         Population mutatedChildren = null;
 
-        pop = populationInitializer.initPopulation();
+        pop = populationInitializer.initPopulation(p, 10);
         List<Float> evaluations = evaluator.evaluate(pop);
 
         float bestFitness = bestEval(evaluations);
