@@ -53,12 +53,15 @@ public class Segmentation {
         return coll;
     }
 
-//    public String toString(){
-//        StringBuilder sb;
-//        for (int y = 0; y < y_size; y++){
-//            for (int x = 0; x < x_size; x++){
-//                System.out.print(segmentation.get(y).get(x) + " ");
-//            }
-//        }
-//    }
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        for (int y = 0; y < getHeight(); y++){
+            for (int x = 0; x < getWidth(); x++){
+                sb.append(segmentation.get(y).get(x).label);
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
 }
