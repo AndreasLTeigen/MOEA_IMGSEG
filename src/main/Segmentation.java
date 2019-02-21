@@ -37,6 +37,27 @@ public class Segmentation {
     public SegLabel getLabel(int x, int y) {
         return segmentation.get(y).get(x);
     }
+
+    /**
+     * Get labels in the order: right, left, top, bot, right_top, right_bot, left_top, left_bot
+     * The labels will be null, if a neghbour would be out of bounds
+     */
+    public List<SegLabel> getNeighbours(int x, int y) {
+        List<SegLabel> neighbours = new ArrayList<>();
+        int[][] neighbourCoords = {{1, 0}, {-1, 0}, {0, -1}, {0, 1}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1}};
+        for (int i = 0; i < neighbourCoords.length; i++) {
+            int nx = x + neighbourCoords[i][0];
+            int ny = y + neighbourCoords[i][1];
+
+            //check if out of bounds
+            if (nx < 0 || nx >= getWidth() || ny < 0 || ny >= getHeight()) {
+                neighbours.add(null);
+            } else {
+                neighbours.add(getLabel(nx, ny));
+            }
+        }
+        return neighbours;
+    }
     public int getLabelValue(int x, int y) {
         return getLabel(x, y).label;
     }
@@ -57,7 +78,7 @@ public class Segmentation {
         StringBuilder sb = new StringBuilder();
         for (int y = 0; y < getHeight(); y++){
             for (int x = 0; x < getWidth(); x++){
-                sb.append(segmentation.get(y).get(x).label);
+                sb.append("[").append(segmentation.get(y).get(x).label).append("]");
             }
             sb.append("\n");
         }
