@@ -1,11 +1,12 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Segmentation {
 
-    private List<List<Integer>> segmentation;
+    private List<List<SegLabel>> segmentation = new ArrayList<>();
 
     /**
      * Create a segmentation to the size of the given image
@@ -16,28 +17,40 @@ public class Segmentation {
     }
     public Segmentation(int width, int height) {
         for (int y = 0; y < height; y++) {
-            ArrayList<Integer> row = new ArrayList<>();
+            ArrayList<SegLabel> row = new ArrayList<>();
 
             for (int x = 0; x < width; x++) {
-                row.add(0);
+                row.add(new SegLabel());
             }
 
+            segmentation.add(row);
         }
     }
 
     public int getWidth() {
-        return 0;
+        return segmentation.get(0).size();
     }
-    public void getHeight() {
-
+    public int getHeight() {
+        return segmentation.size();
     }
 
-    public int getLabel(int x, int y) {
+    public SegLabel getLabel(int x, int y) {
         return segmentation.get(y).get(x);
     }
+    public int getLabelValue(int x, int y) {
+        return getLabel(x, y).label;
+    }
 
-    public void setLabel(int x, int y, int label) {
-        segmentation.get(y).set(x, label);
+    public void setLabelValue(int x, int y, int label) {
+        segmentation.get(y).get(x).label = label;
+    }
+
+    public List<SegLabel> getLabelsCollection() {
+        List<SegLabel> coll = new ArrayList<>(getWidth() * getHeight());
+        for (List<SegLabel> sll : segmentation) {
+            coll.addAll(sll);
+        }
+        return coll;
     }
 
 //    public String toString(){
