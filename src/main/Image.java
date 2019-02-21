@@ -34,4 +34,8 @@ public class Image {
     public List<List<Pixel>> getPixels() {
         return pixels;
     }
+
+    public Pixel getPixel(SegLabel label) {
+        return getPixel(label.x, label.y);
+    }
 }

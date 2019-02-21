@@ -20,7 +20,7 @@ public class Segmentation {
             ArrayList<SegLabel> row = new ArrayList<>();
 
             for (int x = 0; x < width; x++) {
-                row.add(new SegLabel());
+                row.add(new SegLabel(x, y, 0));
             }
 
             segmentation.add(row);
