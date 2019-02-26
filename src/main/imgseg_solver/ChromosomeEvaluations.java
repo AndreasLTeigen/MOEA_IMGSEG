@@ -6,7 +6,7 @@ import imgseg_representation.Chromosome;
 public class ChromosomeEvaluations {
 
     public static float overallDeviation(Chromosome chrom) {
-        for ()
+        //for ()
         return 0;
     }
 

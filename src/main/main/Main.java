@@ -1,9 +1,8 @@
 package main;
 
-import imgseg_representation.Image;
-import imgseg_representation.IsegImageIO;
-import imgseg_representation.Problem;
+import imgseg_representation.*;
 import imgseg_solver.IsegSolver;
+import imgseg_solver.RandomPopulationInitializer;
 import solver.GeneticSolver;
 
 public class Main{
@@ -14,9 +13,11 @@ public class Main{
 
         GeneticSolver solver = new IsegSolver();
         solver.popSize = 2;
-        solver.solve(p);
+        //solver.solve(p);
 
-        IsegImageIO.drawImage(img);
+        //test drawImageAndSegmentation
+        Chromosome chrom = RandomPopulationInitializer.createRandomChromosome(p);
+        IsegImageIO.drawSegmentedImage(chrom.img, chrom.segmentation);
 
 //        long startTime = System.currentTimeMillis();
 //        Population pop = new RandomPopulationInitializer().initPopulation(p, 100);
