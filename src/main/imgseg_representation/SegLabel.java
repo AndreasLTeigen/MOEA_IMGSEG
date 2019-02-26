@@ -10,4 +10,8 @@ public class SegLabel {
         this.y = y;
         this.label = label;
     }
+
+    public boolean equals(SegLabel o) {
+        return label == o.label;
+    }
 }
