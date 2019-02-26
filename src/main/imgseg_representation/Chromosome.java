@@ -1,7 +1,4 @@
-package main;
-
-import java.util.ArrayList;
-import java.util.List;
+package imgseg_representation;
 
 public class Chromosome {
     public Segmentation segmentation;

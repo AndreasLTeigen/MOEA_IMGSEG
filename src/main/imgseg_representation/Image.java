@@ -1,4 +1,4 @@
-package main;
+package imgseg_representation;
 
 import java.util.List;
 

@@ -1,11 +1,12 @@
 package  imgseg_solver;
 
 
-import main.Chromosome;
+import imgseg_representation.Chromosome;
 
 public class ChromosomeEvaluations {
 
     public static float overallDeviation(Chromosome chrom) {
+        for ()
         return 0;
     }
 

@@ -1,4 +1,4 @@
-package main;
+package imgseg_representation;
 
 import java.util.List;
 
@@ -14,5 +14,5 @@ public class Pixel {
         this.row = row;
         this.col = col;
     }
-    //public List<main.Pixel> neighbours;
+    //public List<imgseg_representation.Pixel> neighbours;
 }

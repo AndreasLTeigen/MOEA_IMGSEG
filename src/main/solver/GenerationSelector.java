@@ -1,7 +1,7 @@
 package  solver;
 
 
-import main.Population;
+import imgseg_representation.Population;
 
 public interface GenerationSelector {
 

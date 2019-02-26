@@ -1,7 +1,6 @@
-package main;
+package imgseg_representation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Segmentation {

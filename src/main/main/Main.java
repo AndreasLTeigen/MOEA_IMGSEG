@@ -1,19 +1,22 @@
 package main;
 
+import imgseg_representation.Image;
+import imgseg_representation.IsegImageIO;
+import imgseg_representation.Problem;
 import imgseg_solver.IsegSolver;
 import solver.GeneticSolver;
 
 public class Main{
     public static void main(String[] args){
 
-        Image img = ImageUtils.loadImage("images/86016/Test image.jpg");
+        Image img = IsegImageIO.loadImage("images/86016/Test image.jpg");
         Problem p = new Problem(img);
 
         GeneticSolver solver = new IsegSolver();
         solver.popSize = 2;
         solver.solve(p);
 
-//        ImageUtils.drawImage(img);
+        IsegImageIO.drawImage(img);
 
 //        long startTime = System.currentTimeMillis();
 //        Population pop = new RandomPopulationInitializer().initPopulation(p, 100);
@@ -21,7 +24,7 @@ public class Main{
 //        int i = 0;
 //        for (Chromosome c : pop) {
 //            if (i++ % 20 == 0)
-//                ImageUtils.drawSegmentation(c.segmentation);
+//                IsegImageIO.drawSegmentation(c.segmentation);
 //        }
     }
 }

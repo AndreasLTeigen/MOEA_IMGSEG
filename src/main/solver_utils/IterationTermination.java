@@ -1,6 +1,6 @@
 package  solver_utils;
 
-import main.Population;
+import imgseg_representation.Population;
 import solver.TerminateCondition;
 
 public class IterationTermination implements TerminateCondition {

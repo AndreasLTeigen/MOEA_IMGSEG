@@ -1,6 +1,6 @@
 package  imgseg_solver;
 
-import main.*;
+import imgseg_representation.*;
 import solver.PopulationInitializer;
 import utils.Utils;
 

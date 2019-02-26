@@ -1,6 +1,6 @@
 package  solver;
 
-import main.Chromosome;
+import imgseg_representation.Chromosome;
 
 import java.util.List;
 

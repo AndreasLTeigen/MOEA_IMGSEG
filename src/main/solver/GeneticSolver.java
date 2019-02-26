@@ -1,7 +1,7 @@
 package  solver;
 
-import main.Population;
-import main.Problem;
+import imgseg_representation.Population;
+import imgseg_representation.Problem;
 
 import java.util.List;
 import java.util.NoSuchElementException;

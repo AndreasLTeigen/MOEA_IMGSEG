@@ -1,4 +1,4 @@
-package main;
+package imgseg_representation;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -9,13 +9,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import main.*;
 
-public class ImageUtils {
+public class IsegImageIO {
 
     public static final float rgbMaxVal = 255;
+    private static Color[] ColorArray = {Color.black, Color.blue, Color.cyan, Color.darkGray, Color.gray, Color.green, Color.lightGray, Color.magenta, Color.orange, Color.pink, Color.red, Color.white, Color.yellow};
 
-    public static Image loadImage(String filename) {
+
+    public static imgseg_representation.Image loadImage(String filename) {
         BufferedImage buffImg = null;
 
         try {
@@ -45,10 +46,9 @@ public class ImageUtils {
             pixels.add(row);
         }
 
-        return new Image(pixels);
+        return new imgseg_representation.Image(pixels);
     }
 
-    private static Color[] ColorArray = {Color.black, Color.blue, Color.cyan, Color.darkGray, Color.gray, Color.green, Color.lightGray, Color.magenta, Color.orange, Color.pink, Color.red, Color.white, Color.yellow};
 
     public static void drawSegmentation(Segmentation seg) {
         List<List<Pixel>> pixels = new ArrayList<>(seg.getHeight());
@@ -71,7 +71,7 @@ public class ImageUtils {
             }
             pixels.add(row);
         }
-        Image img =  new Image(pixels);
+        imgseg_representation.Image img =  new imgseg_representation.Image(pixels);
         drawImage(img);
     }
 

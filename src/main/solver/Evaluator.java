@@ -2,7 +2,7 @@ package  solver;
 
 
 
-import main.Population;
+import imgseg_representation.Population;
 
 import java.util.List;
 
