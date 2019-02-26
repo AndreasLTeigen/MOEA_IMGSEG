@@ -3,6 +3,7 @@ package main;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Population implements Iterable<Chromosome>{
 
@@ -13,6 +14,9 @@ public class Population implements Iterable<Chromosome>{
         this.chromosones = chromosomes;
     }
 
+    public Stream<Chromosome> stream() {
+        return chromosones.stream();
+    }
     public Iterator<Chromosome> iterator() {
         return chromosones.iterator();
     }
