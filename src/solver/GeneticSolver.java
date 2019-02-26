@@ -10,6 +10,9 @@ import java.util.NoSuchElementException;
 
 public class GeneticSolver {
 
+    public int popSize = 10;
+
+
     protected PopulationInitializer populationInitializer = null;
     protected Evaluator evaluator= null;
     protected ParentSelector parentSelector= null;
@@ -18,7 +21,6 @@ public class GeneticSolver {
     protected GenerationSelector generationSelector= null;
     protected TerminateCondition terminateCondition= null;
 
-    public int popSize = 10;
 
     public void solve(Problem p) {
 

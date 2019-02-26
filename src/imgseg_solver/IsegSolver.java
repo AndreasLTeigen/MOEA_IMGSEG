@@ -5,15 +5,15 @@ import solver_utils.IterationTermination;
 
 import java.util.stream.Collectors;
 
-public class ImgSegSolver extends GeneticSolver {
+public class IsegSolver extends GeneticSolver {
 
-    public ImgSegSolver() {
+    public IsegSolver() {
         super();
 
         populationInitializer = new RandomPopulationInitializer();
 
         //creates a dummy-evaluation of 1 for each individual
-        evaluator = p -> p.stream().map(c -> new ImgsEvaluation(1, c)).collect(Collectors.toList());
+        evaluator = p -> p.stream().map(c -> new IsegEvaluation(1, c)).collect(Collectors.toList());
 
         parentSelector = p->p; //selects everything
         crossPop = p->p; //no crossover, returns the given population

@@ -1,7 +1,6 @@
 package main;
 
-import imgseg_solver.ImgSegSolver;
-import imgseg_solver.RandomPopulationInitializer;
+import imgseg_solver.IsegSolver;
 import solver.GeneticSolver;
 
 public class Main{
@@ -10,7 +9,7 @@ public class Main{
         Image img = ImageUtils.loadImage("images/86016/Test image.jpg");
         Problem p = new Problem(img);
 
-        GeneticSolver solver = new ImgSegSolver();
+        GeneticSolver solver = new IsegSolver();
         solver.popSize = 2;
         solver.solve(p);
 

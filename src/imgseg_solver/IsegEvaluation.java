@@ -3,13 +3,13 @@ package imgseg_solver;
 import main.Chromosome;
 import solver.Evaluation;
 
-public class ImgsEvaluation implements Evaluation<Chromosome> {
+public class IsegEvaluation implements Evaluation<Chromosome> {
 
     private Chromosome chromosome;
     private float eval;
 
 
-    public ImgsEvaluation(float evaluation, Chromosome chrom) {
+    public IsegEvaluation(float evaluation, Chromosome chrom) {
         this.eval = evaluation;
         this.chromosome = chrom;
     }
