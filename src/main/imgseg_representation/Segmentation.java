@@ -1,7 +1,9 @@
 package imgseg_representation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Segmentation {
 
@@ -75,6 +77,24 @@ public class Segmentation {
             coll.addAll(sll);
         }
         return coll;
+    }
+
+    //returns all seglabels with a list for each segmentation
+    public List<List<SegLabel>> getSegmentations() {
+        int maxLabel = getMaxLabel();
+        //fill labelsInSeg with elements equal to max label
+        List<List<SegLabel>> labelsInSeg = new ArrayList<>(Collections.nCopies(maxLabel+1, new ArrayList<>()));
+
+        stream().forEach(l -> labelsInSeg.get(l.label).add(l));
+        return labelsInSeg;
+    }
+
+    public int getMaxLabel() {
+        return stream().mapToInt(l -> l.label).max().orElseThrow();
+    }
+
+    public Stream<SegLabel> stream() {
+        return segmentation.stream().flatMap(List::stream);
     }
 
     public String toString(){
