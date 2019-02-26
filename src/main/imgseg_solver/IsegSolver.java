@@ -1,7 +1,7 @@
-package imgseg_solver;
+package main.imgseg_solver;
 
-import solver.*;
-import solver_utils.IterationTermination;
+import main.solver.*;
+import main.solver_utils.IterationTermination;
 
 import java.util.stream.Collectors;
 

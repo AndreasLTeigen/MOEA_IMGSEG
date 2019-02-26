@@ -1,7 +1,7 @@
-package solver_utils;
+package main.solver_utils;
 
 import main.Population;
-import solver.TerminateCondition;
+import main.solver.TerminateCondition;
 
 public class IterationTermination implements TerminateCondition {
 

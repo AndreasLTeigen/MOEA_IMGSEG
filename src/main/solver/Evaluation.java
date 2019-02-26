@@ -1,6 +1,4 @@
-package solver;
-
-import main.Chromosome;
+package main.solver;
 
 public interface Evaluation<T> extends Comparable<Evaluation<T>> {
 

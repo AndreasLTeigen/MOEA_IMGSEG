@@ -1,7 +1,5 @@
 package main;
 
-import utils.Utils;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;

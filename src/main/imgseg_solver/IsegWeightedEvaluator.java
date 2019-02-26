@@ -1,9 +1,8 @@
-package imgseg_solver;
+package main.imgseg_solver;
 
-import main.Chromosome;
 import main.Population;
-import solver.Evaluation;
-import solver.Evaluator;
+import main.solver.Evaluation;
+import main.solver.Evaluator;
 
 import java.util.List;
 

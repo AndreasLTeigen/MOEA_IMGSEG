@@ -1,4 +1,4 @@
-package solver;
+package main.solver;
 
 import main.Population;
 

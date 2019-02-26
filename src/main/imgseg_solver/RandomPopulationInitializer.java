@@ -1,8 +1,8 @@
-package imgseg_solver;
+package main.imgseg_solver;
 
 import main.*;
-import solver.PopulationInitializer;
-import utils.Utils;
+import main.solver.PopulationInitializer;
+import main.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;

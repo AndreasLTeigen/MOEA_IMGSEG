@@ -1,10 +1,8 @@
-package solver;
+package main.solver;
 
 import main.Population;
 import main.Problem;
-import solver.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 

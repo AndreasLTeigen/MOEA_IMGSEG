@@ -1,8 +1,8 @@
-package imgseg_solver;
+package main.imgseg_solver;
 
 import main.Population;
-import solver.Evaluation;
-import solver.Evaluator;
+import main.solver.Evaluation;
+import main.solver.Evaluator;
 
 import java.util.List;
 
@@ -13,5 +13,5 @@ public class IsegSofisticatedEvaluator implements Evaluator {
     public List<Evaluation> evaluate(Population pop) {
         return null;
     }
-    
+
 }
