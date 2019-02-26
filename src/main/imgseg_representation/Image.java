@@ -9,6 +9,9 @@ public class Image {
     public Image(List<List<Pixel>> pixels) {
         this.pixels = pixels;
     }
+    public Image(Image copyOf) {
+        this(copyOf.pixels);
+    }
 
 
     public int getWidth() {
