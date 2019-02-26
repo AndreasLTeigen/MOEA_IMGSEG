@@ -1,7 +1,7 @@
 package main;
 
-import main.imgseg_solver.IsegSolver;
-import main.solver.GeneticSolver;
+import imgseg_solver.IsegSolver;
+import solver.GeneticSolver;
 
 public class Main{
     public static void main(String[] args){

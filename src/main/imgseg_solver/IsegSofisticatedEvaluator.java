@@ -1,8 +1,8 @@
-package main.imgseg_solver;
+package  imgseg_solver;
 
 import main.Population;
-import main.solver.Evaluation;
-import main.solver.Evaluator;
+import solver.Evaluation;
+import solver.Evaluator;
 
 import java.util.List;
 

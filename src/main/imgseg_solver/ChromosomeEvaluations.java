@@ -1,4 +1,5 @@
-package main.imgseg_solver;
+package  imgseg_solver;
+
 
 import main.Chromosome;
 

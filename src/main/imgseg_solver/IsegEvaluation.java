@@ -1,7 +1,7 @@
-package main.imgseg_solver;
+package  imgseg_solver;
 
 import main.Chromosome;
-import main.solver.Evaluation;
+import solver.Evaluation;
 
 public class IsegEvaluation implements Evaluation<Chromosome> {
 

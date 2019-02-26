@@ -1,4 +1,4 @@
-package main.solver;
+package  solver;
 
 public interface Evaluation<T> extends Comparable<Evaluation<T>> {
 
