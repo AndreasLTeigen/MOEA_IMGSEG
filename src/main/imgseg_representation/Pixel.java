@@ -4,15 +4,15 @@ import java.util.List;
 
 public class Pixel {
     public float r, g, b;
-    public int row;
-    public int col;
+    public int y;
+    public int x;
 
-    Pixel(float r, float g, float b, int row, int col) {
+    Pixel(float r, float g, float b, int y, int x) {
         this.r = r;
         this.g = g;
         this.b = b;
-        this.row = row;
-        this.col = col;
+        this.y = y;
+        this.x = x;
     }
     //public List<imgseg_representation.Pixel> neighbours;
 }
