@@ -90,7 +90,7 @@ public class Segmentation {
     }
 
     public int getMaxLabel() {
-        return stream().mapToInt(l -> l.label).max().orElseThrow();
+        return stream().mapToInt(l -> l.label).max().getAsInt();
     }
 
     public Stream<SegLabel> stream() {
