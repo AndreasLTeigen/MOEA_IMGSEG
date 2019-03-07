@@ -31,6 +31,10 @@ public class IsegImageIO {
         return img;
     }
 
+    public static void drawCharomosome(Chromosome c) {
+        drawSegmentedImage(c.img, c.segmentation);
+    }
+
     public static void drawSegmentedImage(Image img, Segmentation seg) {
         Image segImg = createSegmentedImage(img, seg);
         drawImage(segImg);
@@ -53,9 +57,14 @@ public class IsegImageIO {
     }
 
 
-
+    /**
+     * Merge the segments and image
+     * @param img
+     * @param seg
+     * @return
+     */
     private static Image createSegmentedImage(Image img, Segmentation seg) {
-        Image segimg = new Image(img);
+        Image segimg = img.clone();
 
         //look at four and four pixels, and make them black if there are different segments within
         for (int y = 0; y < img.getHeight() -1; y++) {
