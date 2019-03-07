@@ -16,6 +16,13 @@ public class Pixel implements Cloneable{
     }
     //public List<imgseg_representation.Pixel> neighbours;
 
+    public float getPixelDistance(Pixel p2){
+        return (float)Math.sqrt( Math.pow(this.r-p2.r, 2) + Math.pow(this.g-p2.g, 2) + Math.pow(this.b-p2.b, 2) );
+    }
+    public float getPixelIntensity(){
+        return (float)Math.sqrt( Math.pow(this.r, 2) + Math.pow(this.g, 2) + Math.pow(this.b, 2) );
+    }
+
     @Override
     public Pixel clone() {
         return new Pixel(r, g, b, x, y);

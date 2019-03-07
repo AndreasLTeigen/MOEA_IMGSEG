@@ -5,6 +5,7 @@ import imgseg_representation.Image;
 import imgseg_representation.IsegImageIO;
 import imgseg_representation.Problem;
 import imgseg_solver.ChromosomeEvaluations;
+import imgseg_solver.HeuristicPopulationInitializer;
 import imgseg_solver.IsegSolver;
 import imgseg_solver.RandomPopulationInitializer;
 import solver.GeneticSolver;
@@ -26,8 +27,10 @@ public class Main{
 //        solver.popSize = 2;
 //        solver.solve(p);
 
-        List<Chromosome> chroms = Stream.generate(() -> RandomPopulationInitializer.createRandomChromosome(p))
-                .limit(3).collect(Collectors.toList());
+        int chromCount = 1;
+
+        List<Chromosome> chroms = Stream.generate(() -> HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000))
+                .limit(chromCount).collect(Collectors.toList());
 
         List<Float> dists = chroms.stream().map(ChromosomeEvaluations::overallDeviation)
                 .collect(Collectors.toList());
