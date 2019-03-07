@@ -1,16 +1,14 @@
 package imgseg_representation;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Image {
+public class Image implements Cloneable{
 
     private List<List<Pixel>> pixels;
 
     public Image(List<List<Pixel>> pixels) {
         this.pixels = pixels;
-    }
-    public Image(Image copyOf) {
-        this(copyOf.pixels);
     }
 
 
@@ -27,11 +25,11 @@ public class Image {
     /**
      * get a list of all neighbours in the order [right, left, top, bot, upright, botright, topleft, botleft]
      */
-    public List<Pixel> getNeighbours(int row, int col) {
+    public List<Pixel> getNeighbours(int x, int y) {
         return null;
     }
     public List<Pixel> getNeighbours(Pixel p) {
-        return getNeighbours(p.row, p.col);
+        return getNeighbours(p.x, p.y);
     }
 
     public List<List<Pixel>> getPixels() {
@@ -40,5 +38,14 @@ public class Image {
 
     public Pixel getPixel(SegLabel label) {
         return getPixel(label.x, label.y);
+    }
+
+    public Image clone() {
+        List<List<Pixel>> clonedP = pixels.stream().map(
+                row -> row.stream()
+                        .map(Pixel::clone)
+                        .collect(Collectors.toList())
+        ).collect(Collectors.toList());
+        return new Image(clonedP);
     }
 }
