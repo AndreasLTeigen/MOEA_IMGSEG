@@ -14,6 +14,14 @@ public class Population implements Iterable<Chromosome>{
         this.chromosones = chromosomes;
     }
 
+    public List<Chromosome> getPopulace() {
+        return chromosones;
+    }
+
+    public void setPopulace(List<Chromosome> populace) {
+        this.chromosones = populace;
+    }
+
     public Stream<Chromosome> stream() {
         return chromosones.stream();
     }
