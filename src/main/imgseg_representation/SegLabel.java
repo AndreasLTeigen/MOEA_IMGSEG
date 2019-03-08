@@ -14,4 +14,8 @@ public class SegLabel {
     public boolean equals(SegLabel o) {
         return label == o.label;
     }
+
+    public String toString() {
+        return "Label: " + label + " x:" + x + " y:" + y;
+    }
 }

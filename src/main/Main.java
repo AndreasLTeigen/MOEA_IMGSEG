@@ -34,10 +34,15 @@ public class Main{
 
         List<Float> dists = chroms.stream().map(ChromosomeEvaluations::overallDeviation)
                 .collect(Collectors.toList());
+
+        List<Float> connectivities = chroms.stream().map(ChromosomeEvaluations::connectivity)
+                .collect(Collectors.toList());
+
         List<Integer> segemntCounts = chroms.stream().map(c -> c.segmentation.getSegmentations().size())
                 .collect(Collectors.toList());
 
         System.out.println("segDist-s: " + dists);
+        System.out.println("seg connectivities: " + connectivities);
         System.out.println("image segment count: " + segemntCounts);
 
         chroms.forEach(IsegImageIO::drawCharomosome);
