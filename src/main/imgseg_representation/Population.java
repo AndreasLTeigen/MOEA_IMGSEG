@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 public class Population implements Iterable<Chromosome>{
 
-    private List<Chromosome> chromosones = new ArrayList<>();
+    public List<Chromosome> chromosones = new ArrayList<>();
 
     public Population(List<Chromosome> chromosomes) {
 

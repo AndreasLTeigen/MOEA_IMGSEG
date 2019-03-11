@@ -27,7 +27,7 @@ public class Main{
 //        solver.popSize = 2;
 //        solver.solve(p);
 
-        int chromCount = 1;
+        int chromCount = 3;
 
         List<Chromosome> chroms = Stream.generate(() -> HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000))
                 .limit(chromCount).collect(Collectors.toList());
