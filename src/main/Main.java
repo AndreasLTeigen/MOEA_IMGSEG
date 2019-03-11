@@ -32,17 +32,14 @@ public class Main{
         List<Chromosome> chroms = Stream.generate(() -> HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000))
                 .limit(chromCount).collect(Collectors.toList());
 
-        List<Float> dists = chroms.stream().map(ChromosomeEvaluations::overallDeviation)
-                .collect(Collectors.toList());
-
-        List<Float> connectivities = chroms.stream().map(ChromosomeEvaluations::connectivity)
-                .collect(Collectors.toList());
+        //compute objectives
+        chroms.forEach(Chromosome::computeObjectives);
 
         List<Integer> segemntCounts = chroms.stream().map(c -> c.segmentation.getSegmentations().size())
                 .collect(Collectors.toList());
 
-        System.out.println("segDist-s: " + dists);
-        System.out.println("seg connectivities: " + connectivities);
+        System.out.println("seg deviation: " + chroms.stream().map(c -> c.objectiveValues.get(Chromosome.overallDeviationIndex)).collect(Collectors.toList()));
+        System.out.println("seg connectivities: " + chroms.stream().map(c -> c.objectiveValues.get(Chromosome.connectivityIndex)).collect(Collectors.toList()));
         System.out.println("image segment count: " + segemntCounts);
 
         chroms.forEach(IsegImageIO::drawCharomosome);
