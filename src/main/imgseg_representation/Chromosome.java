@@ -1,12 +1,19 @@
 package imgseg_representation;
 
+import com.sun.javafx.UnmodifiableArrayList;
 import imgseg_solver.ChromosomeEvaluations;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Chromosome {
     public Segmentation segmentation;
     public Image img;
 
-    public final float overallDev, connectivity;
+    public int overallDeviationIndex = 0, connectivityIndex = 1;
+
+    public final List<Float> objectiveValues;
 
     /**
      * Create an empty chromosome with the size of the given image
@@ -16,8 +23,12 @@ public class Chromosome {
         this.segmentation = new Segmentation(img);
         this.img = img;
 
-        overallDev = ChromosomeEvaluations.overallDeviation(this);
-        connectivity = ChromosomeEvaluations.connectivity(this);
+        Float[] objectiveValuesList = {
+                ChromosomeEvaluations.overallDeviation(this),
+                ChromosomeEvaluations.connectivity(this)
+        };
+
+        objectiveValues = new UnmodifiableArrayList<>(objectiveValuesList, objectiveValuesList.length);
     }
 
 
