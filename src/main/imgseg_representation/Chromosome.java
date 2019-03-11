@@ -16,6 +16,12 @@ public class Chromosome {
     public final List<Float> objectiveValues;
 
     /**
+     * Fo testing puposes
+     */
+    public Chromosome(Float... objectiveVals) {
+        objectiveValues = new UnmodifiableArrayList<>(objectiveVals, objectiveVals.length);
+    }
+    /**
      * Create an empty chromosome with the size of the given image
      * @param img
      */
