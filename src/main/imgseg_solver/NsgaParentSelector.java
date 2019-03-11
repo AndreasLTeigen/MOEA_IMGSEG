@@ -24,8 +24,7 @@ public class NsgaParentSelector implements ParentSelector {
     /**
      * returns a sorted list of a given pareto front according to crowding distance
      */
-    public static List<Chromosome> crowdingDistanceSort(ParetoFront paretoFront) {
-        List<Chromosome> front = paretoFront.chroms;
+    public static List<Chromosome> crowdingDistanceSort(List<Chromosome> front) {
 
         //create a nichCountList so we dont copute it more than necessary
         Map<Chromosome, Float> nichCounts = front.stream()
@@ -41,6 +40,8 @@ public class NsgaParentSelector implements ParentSelector {
         //reverse the list, as we want high crowding distances first
         Collections.reverse(sortedFront);
 
+        System.out.println(nichCounts.values());
+
         return sortedFront;
     }
 
@@ -52,12 +53,12 @@ public class NsgaParentSelector implements ParentSelector {
         return nichingValue;
     }
     private static float sharingFunc(Chromosome c1, Chromosome c2) {
-        float shareMaxDist = 10;
-        float distanceImportance = 1; // known as "alpha"
+        float shareMaxDist = 3;
+        float distanceImportance = 3; // known as "alpha"
 
         //max and min objective vals should be set somewhere else
         List<Float> minObjectiveVals = Arrays.asList(0f, 0f);
-        List<Float> maxObjectiveVals = Arrays.asList(10000f, 10000f);
+        List<Float> maxObjectiveVals = Arrays.asList(10f, 10f);
 
         float squaredObjectiveDistsSum = (float)IntStream.range(0, c1.objectiveValues.size())
                 .mapToDouble(i -> {
