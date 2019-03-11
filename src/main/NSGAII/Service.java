@@ -3,16 +3,11 @@ package NSGAII;
 /*
  * This repository / codebase is Open Source and free for use and rewrite.
  */
-package io.onclave.nsga.ii.api;
 
 import imgseg_representation.Chromosome;
 import imgseg_representation.Population;
-import io.onclave.nsga.ii.Interface.IObjectiveFunction;
-import io.onclave.nsga.ii.configuration.Configuration;
-import io.onclave.nsga.ii.datastructure.Allele;
-import io.onclave.nsga.ii.datastructure.Chromosome;
-import io.onclave.nsga.ii.datastructure.ParetoObject;
-import io.onclave.nsga.ii.datastructure.Population;
+import solver.IObjectiveFunction;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

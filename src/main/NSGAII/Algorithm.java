@@ -6,14 +6,6 @@ package NSGAII;
 
 import imgseg_representation.Chromosome;
 import imgseg_representation.Population;
-import io.onclave.nsga.ii.api.GraphPlot;
-import io.onclave.nsga.ii.api.Reporter;
-import io.onclave.nsga.ii.api.Service;
-import io.onclave.nsga.ii.api.Synthesis;
-import io.onclave.nsga.ii.configuration.Configuration;
-import io.onclave.nsga.ii.datastructure.Chromosome;
-import io.onclave.nsga.ii.datastructure.ParetoObject;
-import io.onclave.nsga.ii.datastructure.Population;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

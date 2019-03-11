@@ -4,8 +4,7 @@ package NSGAII;
  * This repository / codebase is Open Source and free for use and rewrite.
  */
 
-import io.onclave.nsga.ii.configuration.Configuration;
-import io.onclave.nsga.ii.datastructure.Population;
+import imgseg_representation.Population;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
