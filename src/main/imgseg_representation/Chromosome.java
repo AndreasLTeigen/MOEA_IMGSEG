@@ -30,7 +30,7 @@ public class Chromosome {
         this.img = img;
 
         Float[] objectiveValuesList = {
-                ChromosomeEvaluations.overallDeviation(this),
+                //ChromosomeEvaluations.overallDeviation(this),
                 ChromosomeEvaluations.connectivity(this)
         };
 
