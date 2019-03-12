@@ -1,4 +1,4 @@
-package main;
+
 
 import imgseg_representation.Chromosome;
 import imgseg_representation.Image;

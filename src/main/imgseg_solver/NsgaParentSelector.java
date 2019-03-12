@@ -54,7 +54,7 @@ public class NsgaParentSelector implements ParentSelector {
     }
     private static float sharingFunc(Chromosome c1, Chromosome c2) {
         float shareMaxDist = 3;
-        float distanceImportance = 3; // known as "alpha"
+        float distanceImportance = 1; // known as "alpha"
 
         //max and min objective vals should be set somewhere else
         List<Float> minObjectiveVals = Arrays.asList(0f, 0f);
