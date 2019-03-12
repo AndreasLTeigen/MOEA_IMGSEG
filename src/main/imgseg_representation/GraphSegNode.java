@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GraphSegNode {
-    public int x, y;
+    public final int x, y;
+
     public GraphSegNode next;
     public List<GraphSegNode> previous = new ArrayList<>();
-    public List<GraphSegNode> neighbours = new ArrayList<>();
+
+    public GraphSegNode(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 }
