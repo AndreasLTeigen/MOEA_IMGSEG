@@ -11,10 +11,16 @@ public class Chromosome {
     public Segmentation segmentation;
     public Image img;
 
-    public int overallDeviationIndex = 0, connectivityIndex = 1;
+    public static final int overallDeviationIndex = 0, connectivityIndex = 1;
 
-    public final List<Float> objectiveValues;
+    public List<Float> objectiveValues;
 
+    /**
+     * Fo testing puposes
+     */
+    public Chromosome(Float... objectiveVals) {
+        objectiveValues = new UnmodifiableArrayList<>(objectiveVals, objectiveVals.length);
+    }
     /**
      * Create an empty chromosome with the size of the given image
      * @param img
@@ -22,7 +28,9 @@ public class Chromosome {
     public Chromosome(Image img){
         this.segmentation = new Segmentation(img);
         this.img = img;
+    }
 
+    public void computeObjectives() {
         Float[] objectiveValuesList = {
                 ChromosomeEvaluations.overallDeviation(this),
                 ChromosomeEvaluations.connectivity(this)

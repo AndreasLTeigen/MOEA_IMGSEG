@@ -34,7 +34,7 @@ public class GeneticSolver {
         int iteration = 0;
         while (!terminateCondition.shouldTerminate(iteration, bestFitness, pop)) {
 
-            parents = parentSelector.selectParents(pop);
+            parents = parentSelector.selectParents(pop, children); //TODO: Check children validity
 
             //performs any number of crossovers and mutations on any number of parents
             children = crossPop.crossoverPopulation(parents);
