@@ -24,6 +24,10 @@ public class GraphSeg {
     public GraphSegNode getNode(int x, int y) {
         return nodes.get(y).get(x);
     }
+    public GraphSeg clone(){
+
+        return null;
+    }
 
     /**
      * Get labels in the order: right, left, top, bot, right_top, right_bot, left_top, left_bot
