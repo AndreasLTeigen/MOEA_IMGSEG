@@ -51,4 +51,28 @@ public class GraphSeg {
         return neighbours;
     }
 
+    public int getNodeDirection(GraphSegNode node){
+        int direction = -2;
+        List<GraphSegNode> neighbours;
+
+        neighbours = getNeighbours(node.x,node.y);
+
+        if (node.next == null){
+            return -1;
+        }
+        else {
+            for (int i = 0; i < 4; i++){
+                if (node.next == neighbours.get(i)){
+                    return i;
+                }
+            }
+        }
+
+        //Last part should be unnecessary
+        if (direction == -2){
+            System.out.println("Invalid node direction");
+        }
+        return direction;
+    }
+
 }

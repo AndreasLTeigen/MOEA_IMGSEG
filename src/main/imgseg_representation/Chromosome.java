@@ -41,6 +41,10 @@ public class Chromosome {
         objectiveValues = new UnmodifiableArrayList<>(objectiveValuesList, objectiveValuesList.length);
     }
 
+    public Chromosome clone(){
+        return null;
+    }
+
 
 }
 

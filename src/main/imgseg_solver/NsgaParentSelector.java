@@ -27,7 +27,6 @@ public class NsgaParentSelector implements ParentSelector {
         List<List<ParetoObject>> paretoFronts = new ArrayList<>();
         List<ParetoObject> singularFront = new ArrayList<>();
 
-        List<Chromosome> populace = new ArrayList<>();
         for (Chromosome chromosome : parents.chromosones) {
             paretoObj = new ParetoObject(chromosome);
             paretoPopulace.add(paretoObj);
@@ -158,7 +157,7 @@ public class NsgaParentSelector implements ParentSelector {
      /**
      * returns a sorted list of a given pareto front according to crowding distance
      */
-    public static List<Chromosome> crowdingDistanceSort(List<Chromosome> front) {
+    public static List<Chromosome> crowdingDistanceSortOld(List<Chromosome> front) {
 
         //create a nichCountList so we dont copute it more than necessary
         Map<Chromosome, Float> nichCounts = front.stream()
@@ -177,6 +176,48 @@ public class NsgaParentSelector implements ParentSelector {
         System.out.println(nichCounts.values());
 
         return sortedFront;
+    }
+
+    public static List<Chromosome> crowdingDistanceSort(List<Chromosome> front){
+        float obj1Max = Float.MIN_VALUE, obj1Min = Float.MAX_VALUE, obj2Max = Float.MIN_VALUE, obj2Min = Float.MAX_VALUE;
+        float crowdingDistanceUpdate;
+        List<Float> crowdingDistance = new ArrayList<>();
+        Map<Float, Chromosome> chromosomeObjective1 = new TreeMap<>();
+        Map<Float, Chromosome> chromosomeObjective2 = new TreeMap<>();
+
+        for(Chromosome chromosome: front){
+            chromosomeObjective1.put(chromosome.objectiveValues.get(0), chromosome);
+            chromosomeObjective2.put(chromosome.objectiveValues.get(1), chromosome);
+        }
+
+        for (int i = 0; i < front.size(); i++){
+            crowdingDistance.add((float) 0);
+        }
+        crowdingDistance.set(0, Float.MAX_VALUE);
+        crowdingDistance.set(crowdingDistance.size()-1, Float.MAX_VALUE);
+
+        List<Map.Entry<Float, Chromosome>> sortedChromObjective1 = new ArrayList<>(chromosomeObjective1.entrySet());
+        obj1Min = sortedChromObjective1.get(0).getKey();
+        obj1Max = sortedChromObjective1.get(sortedChromObjective1.size()-1).getKey();
+        for (int i = 0; i < sortedChromObjective1.size(); i++){
+            if (i != 0 || i != crowdingDistance.size()-1){
+                crowdingDistanceUpdate = crowdingDistance.get(i) + ((sortedChromObjective1.get(i+1).getKey() - sortedChromObjective1.get(i-1).getKey())/(obj1Max-obj1Min));
+                crowdingDistance.set(i, crowdingDistanceUpdate);
+            }
+        }
+
+        List<Map.Entry<Float, Chromosome>> sortedChromObjective2 = new ArrayList<>(chromosomeObjective2.entrySet());
+        obj2Min = sortedChromObjective2.get(0).getKey();
+        obj2Max = sortedChromObjective2.get(sortedChromObjective2.size()-1).getKey();
+        for (int i = 0; i < sortedChromObjective2.size(); i++){
+            if (i != 0 || i != crowdingDistance.size()-1){
+                crowdingDistanceUpdate = crowdingDistance.get(i) + ((sortedChromObjective2.get(i+1).getKey() - sortedChromObjective2.get(i-1).getKey())/(obj2Max-obj2Min));
+                crowdingDistance.set(i, crowdingDistanceUpdate);
+            }
+        }
+
+
+        return null;
     }
 
     private static float nichCount(Chromosome forChrom, List<Chromosome> frontOfChrom) {
