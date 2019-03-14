@@ -102,7 +102,7 @@ public class IsegImageIO {
                 float[] rgb = raster.getPixel(x,y, (float[])null);
 
                 Pixel p = new Pixel(rgb[0]/rgbMaxVal, rgb[1]/rgbMaxVal, rgb[2]/rgbMaxVal,
-                        y, x);
+                        x, y);
                 row.add(p);
             }
             pixels.add(row);
