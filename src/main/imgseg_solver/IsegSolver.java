@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 public class IsegSolver extends GeneticSolver {
 
+    public int populationSize = 20;
+
     public IsegSolver() {
         super();
 
@@ -15,7 +17,8 @@ public class IsegSolver extends GeneticSolver {
         //creates a dummy-evaluation of 1 for each individual
         evaluator = p -> p.stream().map(c -> new IsegEvaluation(1, c)).collect(Collectors.toList());
 
-        parentSelector = p->p; //selects everything
+
+        parentSelector = new NsgaParentSelector(populationSize); //selects everything
         crossPop = p->p; //no crossover, returns the given population
         mutatePop = p->p; //no mutations, returns the given population
 

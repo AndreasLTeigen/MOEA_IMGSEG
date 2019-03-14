@@ -9,6 +9,10 @@ public class Population implements Iterable<Chromosome>{
 
     public List<Chromosome> chromosones = new ArrayList<>();
 
+    public Population(){
+        this.chromosones = new ArrayList<>();
+    }
+
     public Population(List<Chromosome> chromosomes) {
 
         this.chromosones = chromosomes;
