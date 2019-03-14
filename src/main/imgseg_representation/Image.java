@@ -24,6 +24,9 @@ public class Image implements Cloneable{
     public Pixel getPixel(SegLabel label) {
         return getPixel(label.x, label.y);
     }
+    public Pixel getPixel(GraphSegNode node) {
+        return getPixel(node.x, node.y);
+    }
 
 
     /**
