@@ -6,6 +6,7 @@ import imgseg_representation.Population;
 import solver.ParentSelector;
 
 
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
@@ -179,45 +180,82 @@ public class NsgaParentSelector implements ParentSelector {
     }
 
     public static List<Chromosome> crowdingDistanceSort(List<Chromosome> front){
-        float obj1Max = Float.MIN_VALUE, obj1Min = Float.MAX_VALUE, obj2Max = Float.MIN_VALUE, obj2Min = Float.MAX_VALUE;
-        float crowdingDistanceUpdate;
-        List<Float> crowdingDistance = new ArrayList<>();
-        Map<Float, Chromosome> chromosomeObjective1 = new TreeMap<>();
-        Map<Float, Chromosome> chromosomeObjective2 = new TreeMap<>();
+
+        class Pair implements  Comparable<Pair>{
+            public Chromosome chromosome;
+            float sortValue;
+
+            public Pair(Chromosome chromosome, float sortValue){
+                this.chromosome = chromosome;
+                this.sortValue = sortValue;
+            }
+            @Override
+            public int compareTo(Pair o) {
+                // -1, jeg kommer først. 1, jeg kommer sist
+                return (int)Math.signum(sortValue - o.sortValue);
+            }
+        }
+
+        float obj1Max, obj1Min, obj2Max, obj2Min;
+        Pair tempPair;
+        List<Pair> crowdingDistance = new ArrayList<>();
+        List<Pair> chromosomeObjective1 = new ArrayList<>();
+        List<Pair> chromosomeObjective2 = new ArrayList<>();
+        List<Chromosome> sortedByCD = new ArrayList<>();
 
         for(Chromosome chromosome: front){
-            chromosomeObjective1.put(chromosome.objectiveValues.get(0), chromosome);
-            chromosomeObjective2.put(chromosome.objectiveValues.get(1), chromosome);
+            tempPair = new Pair(chromosome, chromosome.objectiveValues.get(0));
+            chromosomeObjective1.add(tempPair);
+            tempPair = new Pair(chromosome, chromosome.objectiveValues.get(1));
+            chromosomeObjective2.add(tempPair);
+            tempPair = new Pair(chromosome, 0);
+            crowdingDistance.add(tempPair);
         }
 
-        for (int i = 0; i < front.size(); i++){
-            crowdingDistance.add((float) 0);
-        }
-        crowdingDistance.set(0, Float.MAX_VALUE);
-        crowdingDistance.set(crowdingDistance.size()-1, Float.MAX_VALUE);
+        Collections.sort(chromosomeObjective1);
+        Collections.sort(chromosomeObjective2);
 
-        List<Map.Entry<Float, Chromosome>> sortedChromObjective1 = new ArrayList<>(chromosomeObjective1.entrySet());
-        obj1Min = sortedChromObjective1.get(0).getKey();
-        obj1Max = sortedChromObjective1.get(sortedChromObjective1.size()-1).getKey();
-        for (int i = 0; i < sortedChromObjective1.size(); i++){
-            if (i != 0 || i != crowdingDistance.size()-1){
-                crowdingDistanceUpdate = crowdingDistance.get(i) + ((sortedChromObjective1.get(i+1).getKey() - sortedChromObjective1.get(i-1).getKey())/(obj1Max-obj1Min));
-                crowdingDistance.set(i, crowdingDistanceUpdate);
+        for(Pair cdObject: crowdingDistance){
+            if (cdObject.chromosome == chromosomeObjective1.get(0).chromosome || cdObject.chromosome == chromosomeObjective2.get(0).chromosome){
+                cdObject.sortValue = Float.MAX_VALUE;
+            }
+            if (cdObject.chromosome == chromosomeObjective1.get(chromosomeObjective1.size()-1).chromosome || cdObject.chromosome == chromosomeObjective2.get(chromosomeObjective2.size()-1).chromosome){
+                cdObject.sortValue = Float.MAX_VALUE;
+            }
+        }
+        obj1Min = chromosomeObjective1.get(0).sortValue;
+        obj1Max = chromosomeObjective1.get(chromosomeObjective1.size()-1).sortValue;
+        obj2Min = chromosomeObjective1.get(0).sortValue;
+        obj2Max = chromosomeObjective1.get(chromosomeObjective2.size()-1).sortValue;
+
+        for(int i = 1; i < chromosomeObjective1.size()-1; i++){
+            for(Pair cdObject: crowdingDistance){
+                if (cdObject.chromosome == chromosomeObjective1.get(i).chromosome){
+                    cdObject.sortValue = cdObject.sortValue + ( (chromosomeObjective1.get(i+1).sortValue - chromosomeObjective1.get(i-1).sortValue) / (obj1Max - obj1Min) );
+                }
             }
         }
 
-        List<Map.Entry<Float, Chromosome>> sortedChromObjective2 = new ArrayList<>(chromosomeObjective2.entrySet());
-        obj2Min = sortedChromObjective2.get(0).getKey();
-        obj2Max = sortedChromObjective2.get(sortedChromObjective2.size()-1).getKey();
-        for (int i = 0; i < sortedChromObjective2.size(); i++){
-            if (i != 0 || i != crowdingDistance.size()-1){
-                crowdingDistanceUpdate = crowdingDistance.get(i) + ((sortedChromObjective2.get(i+1).getKey() - sortedChromObjective2.get(i-1).getKey())/(obj2Max-obj2Min));
-                crowdingDistance.set(i, crowdingDistanceUpdate);
+        for(int i = 1; i < chromosomeObjective2.size()-1; i++){
+            for(Pair cdObject: crowdingDistance){
+                if (cdObject.chromosome == chromosomeObjective2.get(i).chromosome){
+                    cdObject.sortValue = cdObject.sortValue + ( (chromosomeObjective2.get(i+1).sortValue - chromosomeObjective2.get(i-1).sortValue) / (obj2Max - obj2Min) );
+                }
             }
         }
+        Collections.sort(crowdingDistance);
+        for (Pair cdObject: crowdingDistance){
+            sortedByCD.add(cdObject.chromosome);
+        }
 
+        for(Pair cdObject: crowdingDistance){
+            System.out.println("Objective value 1: " + cdObject.chromosome.objectiveValues.get(0));
+            System.out.println("Objective value 2: " + cdObject.chromosome.objectiveValues.get(1));
+            System.out.println("CrowdingDistance: " + cdObject.sortValue);
+            System.out.println();
+        }
 
-        return null;
+        return sortedByCD;
     }
 
     private static float nichCount(Chromosome forChrom, List<Chromosome> frontOfChrom) {
@@ -229,7 +267,7 @@ public class NsgaParentSelector implements ParentSelector {
     }
     private static float sharingFunc(Chromosome c1, Chromosome c2) {
         float shareMaxDist = 3;
-        float distanceImportance = 3; // known as "alpha"
+        float distanceImportance = 1; // known as "alpha"
 
         //max and min objective vals should be set somewhere else
         List<Float> minObjectiveVals = Arrays.asList(0f, 0f);
@@ -329,6 +367,8 @@ public class NsgaParentSelector implements ParentSelector {
 
         //TODO return childPopulace
 
-        return tournamentSelection(null);
+        Population childPopulation = new Population(childPopulace);
+
+        return childPopulation;//tournamentSelection(null);
     }
 }

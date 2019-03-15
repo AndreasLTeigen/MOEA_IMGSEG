@@ -21,6 +21,13 @@ public class Image implements Cloneable{
     public Pixel getPixel(int x, int y) {
         return pixels.get(y).get(x);
     }
+    public Pixel getPixel(SegLabel label) {
+        return getPixel(label.x, label.y);
+    }
+    public Pixel getPixel(GraphSegNode node) {
+        return getPixel(node.x, node.y);
+    }
+
 
     /**
      * get a list of all neighbours in the order [right, left, top, bot, upright, botright, topleft, botleft]
@@ -36,9 +43,6 @@ public class Image implements Cloneable{
         return pixels;
     }
 
-    public Pixel getPixel(SegLabel label) {
-        return getPixel(label.x, label.y);
-    }
 
     public Image clone() {
         List<List<Pixel>> clonedP = pixels.stream().map(

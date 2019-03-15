@@ -3,11 +3,17 @@ package imgseg_representation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Segmentation {
 
-    private List<List<SegLabel>> segmentation = new ArrayList<>();
+    public List<List<SegLabel>> segmentation = new ArrayList<>();
+
+    public Segmentation(List<List<SegLabel>> segmentation) {
+        this.segmentation = segmentation;
+    }
 
     /**
      * Create a segmentation to the size of the given image
@@ -92,6 +98,7 @@ public class Segmentation {
     public int getMaxLabel() {
         return stream().mapToInt(l -> l.label).max().getAsInt();
     }
+
 
     public Stream<SegLabel> stream() {
         return segmentation.stream().flatMap(List::stream);

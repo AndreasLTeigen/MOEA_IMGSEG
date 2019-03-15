@@ -1,5 +1,6 @@
 package main;
 
+import graphics.Plot;
 import imgseg_representation.Chromosome;
 import imgseg_representation.Image;
 import imgseg_representation.IsegImageIO;
@@ -9,6 +10,7 @@ import imgseg_solver.HeuristicPopulationInitializer;
 import imgseg_solver.IsegSolver;
 import imgseg_solver.RandomPopulationInitializer;
 import solver.GeneticSolver;
+import imgseg_solver.NsgaParentSelector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,22 +29,30 @@ public class Main{
 //        solver.popSize = 2;
 //        solver.solve(p);
 
-        int chromCount = 3;
+        int chromCount = 6;
 
-        List<Chromosome> chroms = Stream.generate(() -> HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000))
+        List<Chromosome> chroms = Stream.generate(() -> RandomPopulationInitializer.createRandomChromosome(p))//HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000))
                 .limit(chromCount).collect(Collectors.toList());
 
         //compute objectives
         chroms.forEach(Chromosome::computeObjectives);
 
+        NsgaParentSelector parentSelector = new NsgaParentSelector(chromCount);
+        chroms =  parentSelector.crowdingDistanceSort(chroms);
+        
+        Plot.PlotObjectiveValues(chroms);
+
+
         List<Integer> segemntCounts = chroms.stream().map(c -> c.segmentation.getSegmentations().size())
                 .collect(Collectors.toList());
 
-        System.out.println("seg deviation: " + chroms.stream().map(c -> c.objectiveValues.get(Chromosome.overallDeviationIndex)).collect(Collectors.toList()));
-        System.out.println("seg connectivities: " + chroms.stream().map(c -> c.objectiveValues.get(Chromosome.connectivityIndex)).collect(Collectors.toList()));
-        System.out.println("image segment count: " + segemntCounts);
+//        System.out.println("seg deviation: " + chroms.stream().map(c -> c.objectiveValues.get(Chromosome.overallDeviationIndex)).collect(Collectors.toList()));
+//        System.out.println("seg connectivities: " + chroms.stream().map(c -> c.objectiveValues.get(Chromosome.connectivityIndex)).collect(Collectors.toList()));
+//        System.out.println("image segment count: " + segemntCounts);
+//
+//        chroms.forEach(IsegImageIO::drawCharomosome);
 
-        chroms.forEach(IsegImageIO::drawCharomosome);
+
         //test drawImageAndSegmentation
 //        IsegImageIO.drawSegmentedImage(chrom.img, chrom.segmentation);
 

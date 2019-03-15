@@ -2,6 +2,10 @@ package imgseg_representation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class GraphSeg {
 
@@ -11,14 +15,29 @@ public class GraphSeg {
     public GraphSeg() {
 
     }
+
+    /**
+     * Init graphSeg with no links to the size of image
+     * @param img
+     */
+    public GraphSeg(Image img) {
+        this(
+            img.getPixels().stream()
+                .map(prow -> prow.stream()
+                    .map(p -> new GraphSegNode(p.x, p.y))
+                    .collect(Collectors.toList())
+                )
+                .collect(Collectors.toList())
+        );
+    }
     public GraphSeg(List<List<GraphSegNode>> nodes) {
         this.nodes = nodes;
     }
 
-    public float getWidth() {
+    public int getWidth() {
         return nodes.get(0).size();
     }
-    public float getHeight() {
+    public int getHeight() {
         return nodes.size();
     }
     public GraphSegNode getNode(int x, int y) {
@@ -75,4 +94,37 @@ public class GraphSeg {
         return direction;
     }
 
+    public List<GraphSegNode> getNonDiagonalNeighbours(GraphSegNode n) {
+        return getNonDiagonalNeighbours(n.x, n.y);
+    }
+    public List<GraphSegNode> getNonDiagonalNeighbours(int x, int y) {
+        return getNeighbours(x, y).subList(0, 4);
+    }
+
+
+    public List<GraphSegNode> getNeighbours(GraphSegNode n) {
+        return getNeighbours(n.x, n.y);
+    }
+
+    public Set<GraphSegNode> getAllNodes() {
+        return streamAll().collect(Collectors.toSet());
+    }
+    public Stream<GraphSegNode> streamAll() {
+        return nodes.stream().flatMap(List::stream);
+    }
+
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        nodes.forEach(nrow -> {
+            nrow.forEach(n -> {
+                String[] arrows = {"O", ">", "<", "^", "v"};
+                String arr = arrows[n.getNextDirection()+1];
+                sb.append(arr);
+            });
+            sb.append("\n");
+        });
+
+        return sb.toString();
+    }
 }
