@@ -31,7 +31,15 @@ public class Main{
 
         int chromCount = 6;
 
-        List<Chromosome> chroms = Stream.generate(() -> RandomPopulationInitializer.createRandomChromosome(p))//HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000))
+        Plot plot = new Plot();
+        //HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000))
+        List<Chromosome> chroms = Stream.generate(() -> {
+                    Chromosome c = RandomPopulationInitializer.createRandomChromosome(p);
+                    c.computeObjectives();
+                    plot.addParetoFront(Arrays.asList(c));
+                    return c;
+                    plot.
+                })
                 .limit(chromCount).collect(Collectors.toList());
 
         //compute objectives
@@ -41,6 +49,7 @@ public class Main{
         chroms =  parentSelector.crowdingDistanceSort(chroms);
         
         Plot.PlotObjectiveValues(chroms);
+        //chroms.forEach(Chromosome::computeObjectives);
 
 
         List<Integer> segemntCounts = chroms.stream().map(c -> c.segmentation.getSegmentations().size())

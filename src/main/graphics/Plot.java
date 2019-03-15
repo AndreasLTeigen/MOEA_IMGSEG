@@ -17,23 +17,40 @@ import java.awt.*;
 import java.util.List;
 
 public class Plot {
+    private int width = 400, height = 400;
 
-    public static void PlotObjectiveValues(List<Chromosome> chroms) {
-        int width = 400, height = 400;
-        XYSeries d = new XYSeries("data");
-        chroms.forEach(c -> d.add(c.objectiveValues.get(0), c.objectiveValues.get(1)));
 
-        XYSeriesCollection data = new XYSeriesCollection();
-        data.addSeries(d);
+    private XYSeriesCollection series = new XYSeriesCollection();
+    private JFreeChart chart;
 
-        JFreeChart chart = ChartFactory.createScatterPlot("Generations", "overall-deviation", "connectivity", data);
+    private ChartPanel panel;
+    private JFrame frame;
 
-        ChartPanel panel = new ChartPanel(chart);
-        JFrame frame = new JFrame("aaa");
+    private int frontInd = 0;
 
+    public Plot() {
+
+        chart = ChartFactory.createScatterPlot("Generations", "overall-deviation", "connectivity", series);
+        panel = new ChartPanel(chart);
+
+        frame = new JFrame("aaa");
         frame.setSize(width, height);
 
         frame.getContentPane().add(panel);
+
         frame.setVisible(true);
+    }
+
+    public void addParetoFront(List<Chromosome> front) {
+        XYSeries d = new XYSeries(frontInd++);
+        front.forEach(c -> d.add(c.objectiveValues.get(0), c.objectiveValues.get(1)));
+        series.addSeries(d);
+        //panel.repaint();
+    }
+
+
+    public static void PlotObjectiveValues(List<Chromosome> chroms) {
+        Plot p = new Plot();
+        p.addParetoFront(chroms);
     }
 }
