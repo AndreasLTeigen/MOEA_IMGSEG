@@ -19,6 +19,7 @@ import java.util.List;
 public class Plot {
     private int width = 400, height = 400;
 
+
     private XYSeriesCollection series = new XYSeriesCollection();
     private JFreeChart chart;
 

@@ -1,11 +1,14 @@
 package imgseg_solver;
 
+import graphics.Plot;
 import imgseg_representation.Chromosome;
+import imgseg_representation.Pair;
 import imgseg_representation.ParetoObject;
 import imgseg_representation.Population;
 import solver.ParentSelector;
 
 
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
@@ -27,7 +30,6 @@ public class NsgaParentSelector implements ParentSelector {
         List<List<ParetoObject>> paretoFronts = new ArrayList<>();
         List<ParetoObject> singularFront = new ArrayList<>();
 
-        List<Chromosome> populace = new ArrayList<>();
         for (Chromosome chromosome : parents.chromosones) {
             paretoObj = new ParetoObject(chromosome);
             paretoPopulace.add(paretoObj);
@@ -36,6 +38,11 @@ public class NsgaParentSelector implements ParentSelector {
             paretoObj = new ParetoObject(chromosome);
             paretoPopulace.add(paretoObj);
         }
+
+
+        System.out.println(children.chromosones.size());
+        System.out.println(parents.chromosones.size());
+        System.out.println(paretoPopulace.size());
 
         for (ParetoObject paretoObject : paretoPopulace) {
             paretoObject.dominationRank = 0;
@@ -56,6 +63,8 @@ public class NsgaParentSelector implements ParentSelector {
                 singularFront.add(paretoObject);
             }
         }
+
+        paretoFronts.add(singularFront);
 
         int i = 0;
         List<ParetoObject> previousFront = paretoFronts.get(i);
@@ -105,7 +114,7 @@ public class NsgaParentSelector implements ParentSelector {
             }
             if(!nextFront.isEmpty()){
                 i += 1;
-                paretoFronts.set(i,nextFront);
+                paretoFronts.add(nextFront);
             }
             else{
                 break;
@@ -158,7 +167,7 @@ public class NsgaParentSelector implements ParentSelector {
      /**
      * returns a sorted list of a given pareto front according to crowding distance
      */
-    public static List<Chromosome> crowdingDistanceSort(List<Chromosome> front) {
+    public static List<Chromosome> crowdingDistanceSortOld(List<Chromosome> front) {
 
         //create a nichCountList so we dont copute it more than necessary
         Map<Chromosome, Float> nichCounts = front.stream()
@@ -177,6 +186,130 @@ public class NsgaParentSelector implements ParentSelector {
         System.out.println(nichCounts.values());
 
         return sortedFront;
+    }
+
+    public static List<Chromosome> crowdingDistanceSort(List<Chromosome> front){
+
+        /*class Pair implements  Comparable<Pair>{
+            public Chromosome chromosome;
+            float sortValue;
+
+            public Pair(Chromosome chromosome, float sortValue){
+                this.chromosome = chromosome;
+                this.sortValue = sortValue;
+            }
+            @Override
+            public int compareTo(Pair o) {
+                // -1, jeg kommer først. 1, jeg kommer sist
+                return (int)Math.signum(sortValue - o.sortValue);
+            }
+        }
+        */
+
+        float obj1Max, obj1Min, obj2Max, obj2Min;
+        Pair tempPair;
+        List<Pair> crowdingDistance = new ArrayList<>();
+        List<Pair> chromosomeObjective1 = new ArrayList<>();
+        List<Pair> chromosomeObjective2 = new ArrayList<>();
+        List<Chromosome> sortedByCD = new ArrayList<>();
+
+        for(Chromosome chromosome: front){
+            tempPair = new Pair(chromosome, chromosome.objectiveValues.get(0));
+            chromosomeObjective1.add(tempPair);
+            tempPair = new Pair(chromosome, chromosome.objectiveValues.get(1));
+            chromosomeObjective2.add(tempPair);
+            tempPair = new Pair(chromosome, 0);
+            crowdingDistance.add(tempPair);
+        }
+
+        chromosomeObjective1 = sortByDecreasingObjectiveValues(chromosomeObjective1, 0);
+        chromosomeObjective2 = sortByDecreasingObjectiveValues(chromosomeObjective2, 1);
+
+        //Tar ikke hensyn til at flere punkter kan være på samme liste altså at chromosomeObjective1 og chromosomeObjective2 ikke er perfekt reversert sortert av hverandre
+
+        for(Pair cdObject: crowdingDistance){
+            if (cdObject.chromosome == chromosomeObjective1.get(0).chromosome && cdObject.chromosome == chromosomeObjective2.get(0).chromosome){
+                cdObject.sortValue = Float.MAX_VALUE;
+            }
+            if (cdObject.chromosome == chromosomeObjective1.get(chromosomeObjective1.size()-1).chromosome || cdObject.chromosome == chromosomeObjective2.get(chromosomeObjective2.size()-1).chromosome){
+                cdObject.sortValue = Float.MAX_VALUE;
+            }
+        }
+        obj1Min = chromosomeObjective1.get(0).sortValue;
+        obj1Max = chromosomeObjective1.get(chromosomeObjective1.size()-1).sortValue;
+        obj2Min = chromosomeObjective1.get(0).sortValue;
+        obj2Max = chromosomeObjective1.get(chromosomeObjective2.size()-1).sortValue;
+
+        for(int i = 1; i < chromosomeObjective1.size()-1; i++){
+            for(Pair cdObject: crowdingDistance){
+                if (cdObject.chromosome == chromosomeObjective1.get(i).chromosome){
+                    cdObject.sortValue = cdObject.sortValue + ( (chromosomeObjective1.get(i+1).sortValue - chromosomeObjective1.get(i-1).sortValue) / (obj1Max - obj1Min) );
+                }
+            }
+        }
+
+        for(int i = 1; i < chromosomeObjective2.size()-1; i++){
+            for(Pair cdObject: crowdingDistance){
+                if (cdObject.chromosome == chromosomeObjective2.get(i).chromosome){
+                    cdObject.sortValue = cdObject.sortValue + ( (chromosomeObjective2.get(i+1).sortValue - chromosomeObjective2.get(i-1).sortValue) / (obj2Max - obj2Min) );
+                }
+            }
+        }
+        Collections.sort(crowdingDistance);
+        Collections.reverse(crowdingDistance);
+        for (Pair cdObject: crowdingDistance){
+            sortedByCD.add(cdObject.chromosome);
+        }
+
+
+        for(Pair cdObject: crowdingDistance){
+            System.out.println("Objective value 1: " + cdObject.chromosome.objectiveValues.get(0));
+            System.out.println("Objective value 2: " + cdObject.chromosome.objectiveValues.get(1));
+            System.out.println("CrowdingDistance: " + cdObject.sortValue);
+            System.out.println();
+        }
+
+        return sortedByCD;
+    }
+
+    public static List<Pair> sortByDecreasingObjectiveValues(List<Pair> chromosomeObjective, int objectiveNr){
+        int otherObjectiveNr;
+        Collections.sort(chromosomeObjective);
+        Pair otherChromosomeObject, chromosomeObject;
+        List<Pair> equalValue = new ArrayList<>();
+        List<Pair> otherChromosomeObjective = new ArrayList<>();
+
+        if (objectiveNr == 1){
+            otherObjectiveNr = 0;
+        }
+        else {
+            otherObjectiveNr = 1;
+        }
+
+        for (int i = 0; i < chromosomeObjective.size(); i++){
+            if (equalValue.get(equalValue.size()-1).sortValue != chromosomeObjective.get(i).sortValue){
+                if ( equalValue.size() > 1){
+                    //sort the equal values
+                    for(Pair otherChromosome: equalValue){
+                        otherChromosomeObject = new Pair(otherChromosome.chromosome, otherChromosome.chromosome.objectiveValues.get(otherObjectiveNr));
+                        otherChromosomeObjective.add(otherChromosomeObject);
+                    }
+                    Collections.sort(otherChromosomeObjective);
+                    for(int j = 0; j < otherChromosomeObjective.size(); j++){
+                        chromosomeObject = new Pair(otherChromosomeObjective.get(j).chromosome, otherChromosomeObjective.get(j).chromosome.objectiveValues.get(objectiveNr));
+                        chromosomeObjective.set(i - otherChromosomeObjective.size() + 1, chromosomeObject);
+                    }
+                }
+                else{
+                    equalValue.remove(0);
+                    equalValue.add(chromosomeObjective.get(i));
+                }
+            }
+            if(equalValue.get(equalValue.size()-1).sortValue == chromosomeObjective.get(i).sortValue){
+                equalValue.add(chromosomeObjective.get(i));
+            }
+        }
+        return chromosomeObjective;
     }
 
     private static float nichCount(Chromosome forChrom, List<Chromosome> frontOfChrom) {
@@ -256,8 +389,9 @@ public class NsgaParentSelector implements ParentSelector {
     }
 
     @Override
-    public Population selectParents(Population population, Population childre) {
-        List<List<Chromosome>> rankedFronts = nondominatedSort(population, null);
+    public Population selectParents(Population population, Population children) {
+        Plot frontPlot = new Plot();
+        List<List<Chromosome>> rankedFronts = nondominatedSort(population, children);
 
         List<Chromosome> childPopulace = new ArrayList<>();
 
@@ -269,9 +403,16 @@ public class NsgaParentSelector implements ParentSelector {
             if (singularFront != null && !singularFront.isEmpty() && usableSpace > 0){
                 if (usableSpace >= singularFront.size()){
                     childPopulace.addAll(singularFront);
+                    //Test start
+                    frontPlot.addParetoFront(singularFront);
+                    //Test end
                 }
                 else {
                     List<Chromosome> latestFront = crowdingDistanceSort(singularFront);
+
+                    //Test start
+                    frontPlot.addParetoFront(latestFront);
+                    //Test end
 
                     for(int k = 0; k < usableSpace; k++){
                         childPopulace.add(latestFront.get(k));
@@ -288,6 +429,8 @@ public class NsgaParentSelector implements ParentSelector {
 
         //TODO return childPopulace
 
-        return tournamentSelection(null);
+        Population childPopulation = new Population(childPopulace);
+
+        return childPopulation;//tournamentSelection(null);
     }
 }

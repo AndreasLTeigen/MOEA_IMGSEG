@@ -152,7 +152,7 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
                     neighbourBinCount.set(i, 0);
                 }
 
-                neighbours = chromosome.segmentation.getNeighbours(x, y);
+                neighbours = chromosome.segmentation.getNonDiagonalNeighbours(x, y);
                 largestBin = 0;
                 for (SegLabel neighbour : neighbours) {
                     if (neighbour != null) {
@@ -208,12 +208,11 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
         SegLabel currentSegLabel;
         List<SegLabel> neighbours;
         List<SegLabel> segment = new ArrayList<>();
-
         segment.add(segLabel);
 
         for (int i = 0; i < segment.size(); i++){
             currentSegLabel = segment.get(i);
-            neighbours = binSegmentation.getNeighbours(currentSegLabel.x, currentSegLabel.y);
+            neighbours = binSegmentation.getNonDiagonalNeighbours(currentSegLabel.x, currentSegLabel.y);
             for(SegLabel neighbour: neighbours){
                 if(neighbour != null && segmentation.getLabelValue(neighbour.x, neighbour.y) == -1 && neighbour.label == segLabel.label){
                     segment.add(neighbour);
