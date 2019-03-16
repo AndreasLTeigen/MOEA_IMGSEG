@@ -13,8 +13,8 @@ public class SegUtilsTest {
     private Chromosome createChomosome() {
         Image img = IsegImageIO.loadImage("images/147091/Test image.jpg");
         Problem p = new Problem(img);
-        return RandomPopulationInitializer.createRandomChromosome(p);
-//        return HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000);
+//        return RandomPopulationInitializer.createRandomChromosome(p);
+        return HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000);
     }
 
 
