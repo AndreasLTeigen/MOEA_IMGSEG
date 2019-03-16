@@ -4,10 +4,7 @@ import imgseg_representation.*;
 import solver.PopulationInitializer;
 import utils.Utils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RandomPopulationInitializer implements PopulationInitializer {
@@ -28,7 +25,7 @@ public class RandomPopulationInitializer implements PopulationInitializer {
             //with a probability for each neighbour, take its value
 
             //grow region with the neighbours of the neighbours
-            int depth = 15;
+            int depth = 30;//15;
 
             boolean foundLabel = false;
             List<SegLabel> nWLabel = null;
@@ -75,6 +72,18 @@ public class RandomPopulationInitializer implements PopulationInitializer {
             }
             region.stream().filter(l-> l != null && l.label == -1).forEach(l -> l.label = newLabel);
         }
+
+        //change labels only connected diagonally
+        seg.stream().forEach(lab -> {
+            List<Integer> nboursLabels = seg.getNonDiagonalNeighbours(lab).stream()
+                    .filter(Objects::nonNull)
+                    .map(nbour -> nbour.label)
+                    .collect(Collectors.toList());
+            if (!nboursLabels.contains(lab.label)) {
+                lab.label = nboursLabels.get(0);
+            }
+        });
+
         return c;
     }
 

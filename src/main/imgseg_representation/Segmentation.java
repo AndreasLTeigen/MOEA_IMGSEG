@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Segmentation {
@@ -22,6 +23,9 @@ public class Segmentation {
     public Segmentation(Image img) {
         this(img.getWidth(), img.getHeight());
     }
+    public Segmentation(GraphSeg gseg) {
+        this(gseg.getWidth(), gseg.getHeight());
+    }
     public Segmentation(int width, int height) {
         for (int y = 0; y < height; y++) {
             ArrayList<SegLabel> row = new ArrayList<>();
@@ -29,7 +33,6 @@ public class Segmentation {
             for (int x = 0; x < width; x++) {
                 row.add(new SegLabel(x, y, -1));
             }
-
             segmentation.add(row);
         }
     }
@@ -68,6 +71,12 @@ public class Segmentation {
     public List<SegLabel> getNeighbours(SegLabel slabel) {
         return getNeighbours(slabel.x, slabel.y);
     }
+    public List<SegLabel> getNonDiagonalNeighbours(int x, int y) {
+        return getNeighbours(x, y).subList(0, 4);
+    }
+    public List<SegLabel> getNonDiagonalNeighbours(SegLabel l) {
+        return getNeighbours(l).subList(0, 4);
+    }
 
     public int getLabelValue(int x, int y) {
         return getLabel(x, y).label;
@@ -89,7 +98,8 @@ public class Segmentation {
     public List<List<SegLabel>> getSegmentations() {
         int maxLabel = getMaxLabel();
         //fill labelsInSeg with elements equal to max label
-        List<List<SegLabel>> labelsInSeg = new ArrayList<>(Collections.nCopies(maxLabel+1, new ArrayList<>()));
+        List<List<SegLabel>> labelsInSeg = new ArrayList<>(maxLabel+1);
+        IntStream.range(0, maxLabel+1).forEach(i -> labelsInSeg.add(new ArrayList<>(10000)));
 
         stream().forEach(l -> labelsInSeg.get(l.label).add(l));
         return labelsInSeg;
