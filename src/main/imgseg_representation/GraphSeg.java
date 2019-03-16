@@ -30,6 +30,27 @@ public class GraphSeg {
                 .collect(Collectors.toList())
         );
     }
+    //clone the given gseg
+    public GraphSeg(GraphSeg gseg) {
+        this(gseg.getWidth(), gseg.getHeight());
+
+        gseg.streamAll().forEach(n -> {
+            GraphSegNode nnode = getNode(n.x, n.y);
+            int nextDir = n.getNextDirection();
+            GraphSegNode nNextNode = getNonDiagonalNeighbours(nnode).get(nextDir);
+            nnode.next = nNextNode;
+            nNextNode.previous.add(nnode);
+        });
+    }
+    public GraphSeg(int width, int height) {
+        this( IntStream.range(0, height)
+                .mapToObj(i -> IntStream.range(0, width)
+                        .mapToObj(j -> new GraphSegNode(j, i))
+                        .collect(Collectors.toList())
+                )
+                .collect(Collectors.toList())
+        );
+    }
     public GraphSeg(List<List<GraphSegNode>> nodes) {
         this.nodes = nodes;
     }
@@ -49,9 +70,10 @@ public class GraphSeg {
     public GraphSegNode getNode(Pixel p) {
         return getNode(p.x, p.y);
     }
-    public GraphSeg clone(){
 
-        return null;
+    public GraphSeg clone(){
+        GraphSeg gseg = new GraphSeg(this);
+        return gseg;
     }
 
     /**

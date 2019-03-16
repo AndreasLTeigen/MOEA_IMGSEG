@@ -75,14 +75,15 @@ public class RandomPopulationInitializer implements PopulationInitializer {
 
         //change labels only connected diagonally
         seg.stream().forEach(lab -> {
-            List<Integer> nboursLabels = seg.getNonDiagonalNeighbours(lab).stream()
+            List<SegLabel> nboursLabels = seg.getNonDiagonalNeighbours(lab).stream()
                     .filter(Objects::nonNull)
-                    .map(nbour -> nbour.label)
                     .collect(Collectors.toList());
-            if (!nboursLabels.contains(lab.label)) {
-                lab.label = nboursLabels.get(0);
+            if (!nboursLabels.stream().map(nbourlab -> nbourlab.label).collect(Collectors.toList()).contains(lab.label)) {
+//                lab.label = nboursLabels.get(0);
+                nboursLabels.forEach(nbour -> nbour.label = lab.label);
             }
         });
+
 
         return c;
     }
