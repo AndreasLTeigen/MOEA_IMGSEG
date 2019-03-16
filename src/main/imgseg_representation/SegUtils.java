@@ -264,9 +264,9 @@ public class SegUtils {
 
 
             while(nodesAssigend < segment.size()) {
-                System.out.println("concidered nodes left: " + concideredNodes.size());
-                System.out.println("segment size: " + segment.size());
-                System.out.println("nodes assigned: " + nodesAssigend);
+//                System.out.println("concidered nodes left: " + concideredNodes.size());
+//                System.out.println("segment size: " + segment.size());
+//                System.out.println("nodes assigned: " + nodesAssigend);
 
                 NodeEdge currNodeEdge = concideredNodes.poll();
 

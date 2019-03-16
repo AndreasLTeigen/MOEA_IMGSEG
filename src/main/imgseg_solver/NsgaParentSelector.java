@@ -222,8 +222,8 @@ public class NsgaParentSelector implements ParentSelector {
             crowdingDistance.add(tempPair);
         }
 
-        Collections.sort(chromosomeObjective1);
-        Collections.sort(chromosomeObjective2);
+        chromosomeObjective1 = sortByDecreasingObjectiveValues(chromosomeObjective1, 0);
+        chromosomeObjective2 = sortByDecreasingObjectiveValues(chromosomeObjective2, 1);
 
         //Tar ikke hensyn til at flere punkter kan være på samme liste altså at chromosomeObjective1 og chromosomeObjective2 ikke er perfekt reversert sortert av hverandre
 
@@ -282,7 +282,7 @@ public class NsgaParentSelector implements ParentSelector {
         if (objectiveNr == 1){
             otherObjectiveNr = 0;
         }
-        if (objectiveNr == 0){
+        else {
             otherObjectiveNr = 1;
         }
 
@@ -296,7 +296,7 @@ public class NsgaParentSelector implements ParentSelector {
                     }
                     Collections.sort(otherChromosomeObjective);
                     for(int j = 0; j < otherChromosomeObjective.size(); j++){
-                        chromosomeObject = new Pair(otherChromosomeObjective.get(j).chromosome, otherChromosomeObjective.get(j).chromosome.objectiveValues.get(objectiveNr))
+                        chromosomeObject = new Pair(otherChromosomeObjective.get(j).chromosome, otherChromosomeObjective.get(j).chromosome.objectiveValues.get(objectiveNr));
                         chromosomeObjective.set(i - otherChromosomeObjective.size() + 1, chromosomeObject);
                     }
                 }
