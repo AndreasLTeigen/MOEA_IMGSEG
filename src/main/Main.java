@@ -1,10 +1,7 @@
 package main;
 
 import graphics.Plot;
-import imgseg_representation.Chromosome;
-import imgseg_representation.Image;
-import imgseg_representation.IsegImageIO;
-import imgseg_representation.Problem;
+import imgseg_representation.*;
 import imgseg_solver.ChromosomeEvaluations;
 import imgseg_solver.HeuristicPopulationInitializer;
 import imgseg_solver.IsegSolver;
@@ -29,7 +26,7 @@ public class Main{
 //        solver.popSize = 2;
 //        solver.solve(p);
 
-        int chromCount = 6;
+        int chromCount = 10;
 
         Plot plot = new Plot();
         //HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000))
@@ -38,17 +35,28 @@ public class Main{
                     c.computeObjectives();
                     plot.addParetoFront(Arrays.asList(c));
                     return c;
-                    plot.
                 })
+                .limit(chromCount).collect(Collectors.toList());
+
+        List<Chromosome> chroms2 = Stream.generate(() -> {
+            Chromosome c = RandomPopulationInitializer.createRandomChromosome(p);
+            c.computeObjectives();
+            plot.addParetoFront(Arrays.asList(c));
+            return c;
+        })
                 .limit(chromCount).collect(Collectors.toList());
 
         //compute objectives
         chroms.forEach(Chromosome::computeObjectives);
 
         NsgaParentSelector parentSelector = new NsgaParentSelector(chromCount);
-        chroms =  parentSelector.crowdingDistanceSort(chroms);
+        Population populace1 = new Population();
+        populace1.chromosones = chroms;
+        Population populace2 = new Population();
+        populace2.chromosones = chroms2;
+        populace1 =  parentSelector.selectParents(populace1, populace2);
         
-        Plot.PlotObjectiveValues(chroms);
+        //Plot.PlotObjectiveValues(chroms);
         //chroms.forEach(Chromosome::computeObjectives);
 
 

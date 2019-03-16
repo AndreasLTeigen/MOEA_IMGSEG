@@ -1,34 +1,30 @@
-package simple_GA;
-/*
-import NSGAII.Configuration;
+/*package simple_GA;
+
 import imgseg_representation.Chromosome;
+import imgseg_representation.Pair;
 import imgseg_representation.Population;
-import solver.IObjectiveFunction;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class WeightedObjectives {
 
-    public static List<Double> getPopulationFitness (Population population){
-        List<Double> fitness = new ArrayList<>();
-        double objectiveFitnesses;
-        double objectiveWeight;
-        List<Chromosome> chromosomes = population.getPopulace();
+    public static List<Chromosome> simpleParentSelection (Population population, float w1, float w2){
+        float fitness;
+        Pair chromosomeFittness;
+        List<Pair> chromosomeFittnesses = new ArrayList<>();
 
-        Configuration.buildObjectives();
-        for (int i = 0; i < chromosomes.size(); i++){
-            fitness.add(0.0);
-            for (IObjectiveFunction objective: Configuration.getObjectives()){
-                objectiveWeight = objective.getObjectWeight();
-                objectiveFitnesses = objectiveWeight * (objective.objectiveFunction(chromosomes.get(i)));
-                fitness.set(i, fitness.get(i)+objectiveFitnesses);
-            }
+        for(Chromosome chromosome: population.chromosones){
+            fitness = w1*chromosome.objectiveValues.get(0);
+            fitness = fitness + w2*chromosome.objectiveValues.get(1);
+
+            chromosomeFittness = new Pair(chromosome, fitness);
+            chromosomeFittnesses.add(chromosomeFittness);
         }
-        return fitness;
+        return chromosomeFittnesses;
     }
 
     //public static List<Chromosome> chooseParents(Population population){
 
-}
-*/
+}*/
