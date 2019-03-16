@@ -43,6 +43,12 @@ public class GraphSeg {
     public GraphSegNode getNode(int x, int y) {
         return nodes.get(y).get(x);
     }
+    public GraphSegNode getNode(SegLabel l) {
+        return getNode(l.x, l.y);
+    }
+    public GraphSegNode getNode(Pixel p) {
+        return getNode(p.x, p.y);
+    }
     public GraphSeg clone(){
 
         return null;

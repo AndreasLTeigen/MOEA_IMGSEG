@@ -7,6 +7,17 @@ public class Image implements Cloneable{
 
     private List<List<Pixel>> pixels;
 
+    /**
+     * create a black image to the size of the givven image
+     */
+    public Image(Image img) {
+        pixels = img.pixels.stream()
+                .map(prow -> prow.stream()
+                        .map(p -> new Pixel(0, 0, 0, p.x, p.y))
+                        .collect(Collectors.toList())
+                )
+                .collect(Collectors.toList());
+    }
     public Image(List<List<Pixel>> pixels) {
         this.pixels = pixels;
     }
