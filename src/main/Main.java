@@ -21,7 +21,7 @@ public class Main{
         Image img = IsegImageIO.loadImage("images/147091/Test image.jpg");
         Problem p = new Problem(img);
 
-//        Chromosome chrom = HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000);
+        Chromosome chrom = HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000);
 //        Chromosome chromCopy = chrom.clone();
 //        IsegImageIO.drawGraphSeg(chrom.graphSeg);
 //        IsegImageIO.drawGraphSeg(chromCopy.graphSeg);
@@ -30,6 +30,8 @@ public class Main{
 //        System.out.println("original segments; " + seg1.getSegmentations().size());
 //        System.out.println("copy segments: " + seg2.getSegmentations().size());
 
+        chrom.computeObjectives();
+        IsegImageIO.saveSegmentation(chrom);
 
         IsegImageIO.drawImage(img);
 

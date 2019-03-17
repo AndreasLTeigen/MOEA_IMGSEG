@@ -23,6 +23,13 @@ public class Pixel implements Cloneable{
         return (float)Math.sqrt( Math.pow(this.r, 2) + Math.pow(this.g, 2) + Math.pow(this.b, 2) );
     }
 
+    public void setColor(float r, float g, float b) {
+        this.r = r; this.g = g; this.b = b;
+    }
+    public void setColor(float... color) {
+        setColor(color[0], color[1], color[2]);
+    }
+
     @Override
     public Pixel clone() {
         return new Pixel(r, g, b, x, y);
