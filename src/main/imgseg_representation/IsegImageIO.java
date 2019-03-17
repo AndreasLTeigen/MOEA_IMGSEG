@@ -7,9 +7,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.IntStream;
 
 public class IsegImageIO {
 
@@ -29,6 +29,18 @@ public class IsegImageIO {
 
         Image img = convertToImage(buffImg);
         return img;
+    }
+
+    public static void saveSegmentation(Chromosome chrom) {
+        Segmentation seg = SegUtils.getSegRepresentation(chrom.graphSeg);
+        Image img = createImageOfSegmentationType2(seg);
+        Image img2 = createSegmentedImage(chrom.img, seg);
+
+        String filename = "overalldev_" + chrom.objectiveValues.get(Chromosome.overallDeviationIndex)
+                +"_connect_" + chrom.objectiveValues.get(Chromosome.connectivityIndex)
+                +".png";
+        saveImage(img2, "type1_" + filename);
+        saveImage(img, "type2_" + filename);
     }
 
     public static void drawCharomosome(Chromosome c) {
@@ -59,34 +71,51 @@ public class IsegImageIO {
         g.drawImage(another, 0, 0, null);
     }
 
+    private static void saveImage(Image img, String filename) {
+        BufferedImage buffImg = convertToBufferedImage(img);
+        try {
+            ImageIO.write(buffImg, "png", new File("./outImages/" + filename));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Merge the segments and image
-     * @param img
-     * @param seg
-     * @return
      */
     private static Image createSegmentedImage(Image img, Segmentation seg) {
+        float[] color = {0, 1, 0};
         Image segimg = img.clone();
+        drawBorder(segimg, color);
 
         //look at four and four pixels, and make them black if there are different segments within
         for (int y = 0; y < img.getHeight() -1; y++) {
             for (int x = 0; x < img.getWidth() -1; x++) {
-                SegLabel label = seg.getLabel(x, y);
+                SegLabel currLabel = seg.getLabel(x, y);
 
-                //if the current label has neghbours with different labels, make it black
-                List<SegLabel> neighbours = seg.getNeighbours(label);
-                int diffNeighbourCount = (int) neighbours.stream()
-                        .filter(Objects::nonNull)
-                        .filter(l -> !l.equals(label))
-                        .count();
-                if (diffNeighbourCount != 0) {
+                //check if there are different labels to the right or down
+                Set<Integer> labelsAround = new HashSet<>();
+                labelsAround.add(currLabel.label);
+                labelsAround.add(seg.getLabelValue(x+1, y));
+                labelsAround.add(seg.getLabelValue(x, y+1));
+
+                if (labelsAround.size() > 1) {
                     Pixel p = segimg.getPixel(x, y);
-                    p.r = p.g = p.b = 0;
+                    p.setColor(color);
                 }
             }
         }
         return segimg;
+    }
+
+    private static void drawBorder(Image img, float[] color) {
+        img.getPixels().get(0).forEach(p -> p.setColor(color));
+        img.getPixels().get(img.getPixels().size()-1).forEach(p -> p.setColor(color));
+
+        img.getPixels().forEach(prow -> {
+            prow.get(0).setColor(color);
+            prow.get(prow.size()-1).setColor(color);
+        });
     }
 
     private static Image convertToImage(BufferedImage buffImg) {
@@ -112,6 +141,34 @@ public class IsegImageIO {
         }
 
         return new Image(pixels);
+    }
+
+    private static Image createImageOfSegmentationType2(Segmentation seg) {
+        float[] color = {0, 0, 0};
+        Image img = new Image(seg);
+        //set all pixels white
+        img.streamAll().forEach(p -> p.r = p.b = p.g = 1);
+        drawBorder(img, color);
+
+        IntStream.range(0, img.getWidth() -1)
+                .forEach(i ->
+                        IntStream.range(0, img.getHeight()-1)
+                        .forEach(j -> {
+                            SegLabel currLabel = seg.getLabel(i, j);
+
+                            //check if there are different labels to the right or down
+                            Set<Integer> labelsAround = new HashSet<>();
+                            labelsAround.add(currLabel.label);
+                            labelsAround.add(seg.getLabelValue(i+1, j));
+                            labelsAround.add(seg.getLabelValue(i, j+1));
+
+                            if (labelsAround.size() != 1) {
+                                Pixel p = img.getPixel(currLabel);
+                                p.setColor(color);
+                            }
+                        })
+                );
+        return img;
     }
 
     private static Image createImageOfSegmentation(Segmentation seg) {

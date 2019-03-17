@@ -147,8 +147,8 @@ public class SegUtils {
 
 //            System.out.println("Starting segment " + ++i);
 
-//            GraphSegNode startNode = segment.get(0);
-            GraphSegNode startNode = segment.get(Utils.randRange(0, segment.size()));
+            GraphSegNode startNode = segment.get(0);
+//            GraphSegNode startNode = segment.get(Utils.randRange(0, segment.size()));
 
             PriorityQueue<NodeEdge> concideredNodes = new PriorityQueue<>();
             int nodesAssigend = 0;

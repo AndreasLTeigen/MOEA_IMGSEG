@@ -3,6 +3,7 @@ package imgseg_representation;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Image implements Cloneable{
 
@@ -20,6 +21,9 @@ public class Image implements Cloneable{
                 .collect(Collectors.toList());
     }
 
+    public Image(Segmentation seg) {
+        this(seg.getWidth(), seg.getHeight());
+    }
     public Image(GraphSeg gseg) {
         this(gseg.getWidth(), gseg.getHeight());
     }
@@ -72,6 +76,9 @@ public class Image implements Cloneable{
         return pixels;
     }
 
+    public Stream<Pixel> streamAll() {
+        return pixels.stream().flatMap(List::stream);
+    }
 
     public Image clone() {
         List<List<Pixel>> clonedP = pixels.stream().map(
