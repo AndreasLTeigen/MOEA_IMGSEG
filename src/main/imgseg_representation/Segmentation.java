@@ -99,7 +99,7 @@ public class Segmentation {
         int maxLabel = getMaxLabel();
         //fill labelsInSeg with elements equal to max label
         List<List<SegLabel>> labelsInSeg = new ArrayList<>(maxLabel+1);
-        IntStream.range(0, maxLabel+1).forEach(i -> labelsInSeg.add(new ArrayList<>(10000)));
+        IntStream.range(0, maxLabel+1).forEach(i -> labelsInSeg.add(new ArrayList<>()));
 
         stream().forEach(l -> labelsInSeg.get(l.label).add(l));
         return labelsInSeg;

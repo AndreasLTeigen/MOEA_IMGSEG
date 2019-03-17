@@ -1,11 +1,9 @@
 package imgseg_solver;
 
 import graphics.Plot;
-import imgseg_representation.Chromosome;
-import imgseg_representation.Pair;
-import imgseg_representation.ParetoObject;
-import imgseg_representation.Population;
+import imgseg_representation.*;
 import solver.ParentSelector;
+import utils.Utils;
 
 
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -24,24 +22,18 @@ public class NsgaParentSelector implements ParentSelector {
         }
     }
 
-    public static List<List<Chromosome>> nondominatedSort(Population parents, Population children) {
+    public static List<List<Chromosome>> nondominatedSort(Population pop) {
         ParetoObject paretoObj;
-        List<ParetoObject> paretoPopulace = new ArrayList<>();
+        List<ParetoObject> paretoPopulace = pop.chromosones.stream()
+                    .map(c -> new ParetoObject(c))
+                    .collect(Collectors.toList());
+
         List<List<ParetoObject>> paretoFronts = new ArrayList<>();
         List<ParetoObject> singularFront = new ArrayList<>();
 
-        for (Chromosome chromosome : parents.chromosones) {
-            paretoObj = new ParetoObject(chromosome);
-            paretoPopulace.add(paretoObj);
-        }
-        for (Chromosome chromosome : children.chromosones) {
-            paretoObj = new ParetoObject(chromosome);
-            paretoPopulace.add(paretoObj);
-        }
 
-
-        System.out.println(children.chromosones.size());
-        System.out.println(parents.chromosones.size());
+//        System.out.println(children.chromosones.size());
+//        System.out.println(parents.chromosones.size());
         System.out.println(paretoPopulace.size());
 
         for (ParetoObject paretoObject : paretoPopulace) {
@@ -164,29 +156,29 @@ public class NsgaParentSelector implements ParentSelector {
         return chromFront;
     }
 
-     /**
-     * returns a sorted list of a given pareto front according to crowding distance
-     */
-    public static List<Chromosome> crowdingDistanceSortOld(List<Chromosome> front) {
-
-        //create a nichCountList so we dont copute it more than necessary
-        Map<Chromosome, Float> nichCounts = front.stream()
-                .collect(Collectors.toMap(c -> c, c -> nichCount(c, front)));
-
-        //a omparator to sort the nichingValues. They will naturally be sorted in descending order
-        Comparator<Chromosome> nicheCountComparator = (c1, c2) -> (int)Math.signum(nichCounts.get(c1) - nichCounts.get(c2));
-
-        //sort the front by niching. A new list to be sorted in place is used
-        List<Chromosome> sortedFront = new ArrayList<>(front);
-        sortedFront.sort(nicheCountComparator);
-
-        //reverse the list, as we want high crowding distances first
-        Collections.reverse(sortedFront);
-
-        System.out.println(nichCounts.values());
-
-        return sortedFront;
-    }
+//     /**
+//     * returns a sorted list of a given pareto front according to crowding distance
+//     */
+//    public static List<Chromosome> crowdingDistanceSortOld(List<Chromosome> front) {
+//
+//        //create a nichCountList so we dont copute it more than necessary
+//        Map<Chromosome, Float> nichCounts = front.stream()
+//                .collect(Collectors.toMap(c -> c, c -> nichCount(c, front)));
+//
+//        //a omparator to sort the nichingValues. They will naturally be sorted in descending order
+//        Comparator<Chromosome> nicheCountComparator = (c1, c2) -> (int)Math.signum(nichCounts.get(c1) - nichCounts.get(c2));
+//
+//        //sort the front by niching. A new list to be sorted in place is used
+//        List<Chromosome> sortedFront = new ArrayList<>(front);
+//        sortedFront.sort(nicheCountComparator);
+//
+//        //reverse the list, as we want high crowding distances first
+//        Collections.reverse(sortedFront);
+//
+//        System.out.println(nichCounts.values());
+//
+//        return sortedFront;
+//    }
 
     public static List<Chromosome> crowdingDistanceSort(List<Chromosome> front){
 
@@ -222,8 +214,10 @@ public class NsgaParentSelector implements ParentSelector {
             crowdingDistance.add(tempPair);
         }
 
-        chromosomeObjective1 = sortByDecreasingObjectiveValues(chromosomeObjective1, 0);
-        chromosomeObjective2 = sortByDecreasingObjectiveValues(chromosomeObjective2, 1);
+//        chromosomeObjective1 = sortByDecreasingObjectiveValues(chromosomeObjective1, 0);
+//        chromosomeObjective2 = sortByDecreasingObjectiveValues(chromosomeObjective2, 1);
+        Collections.sort(chromosomeObjective1);
+        Collections.sort(chromosomeObjective2);
 
         //Tar ikke hensyn til at flere punkter kan være på samme liste altså at chromosomeObjective1 og chromosomeObjective2 ikke er perfekt reversert sortert av hverandre
 
@@ -262,17 +256,17 @@ public class NsgaParentSelector implements ParentSelector {
         }
 
 
-        for(Pair cdObject: crowdingDistance){
-            System.out.println("Objective value 1: " + cdObject.chromosome.objectiveValues.get(0));
-            System.out.println("Objective value 2: " + cdObject.chromosome.objectiveValues.get(1));
-            System.out.println("CrowdingDistance: " + cdObject.sortValue);
-            System.out.println();
-        }
+//        for(Pair cdObject: crowdingDistance){
+//            System.out.println("Objective value 1: " + cdObject.chromosome.objectiveValues.get(0));
+//            System.out.println("Objective value 2: " + cdObject.chromosome.objectiveValues.get(1));
+//            System.out.println("CrowdingDistance: " + cdObject.sortValue);
+//            System.out.println();
+//        }
 
         return sortedByCD;
     }
 
-    public static List<Pair> sortByDecreasingObjectiveValues(List<Pair> chromosomeObjective, int objectiveNr){
+    private static List<Pair> sortByDecreasingObjectiveValues(List<Pair> chromosomeObjective, int objectiveNr){
         int otherObjectiveNr;
         Collections.sort(chromosomeObjective);
         Pair otherChromosomeObject, chromosomeObject;
@@ -312,55 +306,46 @@ public class NsgaParentSelector implements ParentSelector {
         return chromosomeObjective;
     }
 
-    private static float nichCount(Chromosome forChrom, List<Chromosome> frontOfChrom) {
-        //compute the niching value, wich is the sum of sharing over the given chrom and paretoFront
-        float nichingValue = (float)frontOfChrom.stream()
-                .mapToDouble(frontChrom -> sharingFunc(forChrom, frontChrom))
-                .sum();
-        return nichingValue;
-    }
-    private static float sharingFunc(Chromosome c1, Chromosome c2) {
-        float shareMaxDist = 3;
-        float distanceImportance = 1; // known as "alpha"
-
-        //max and min objective vals should be set somewhere else
-        List<Float> minObjectiveVals = Arrays.asList(0f, 0f);
-        List<Float> maxObjectiveVals = Arrays.asList(10f, 10f);
-
-        float squaredObjectiveDistsSum = (float)IntStream.range(0, c1.objectiveValues.size())
-                .mapToDouble(i -> {
-                    //calculate the distance for each objective squared
-
-                    float c1ObjValue = c1.objectiveValues.get(i);
-                    float c2ObjValue = c2.objectiveValues.get(i);
-
-                    float minObjValue = minObjectiveVals.get(i);
-                    float maxObjValue = maxObjectiveVals.get(i);
-
-                    float objectiveDist = (c1ObjValue - c2ObjValue) / (maxObjValue - minObjValue);
-                    float objectiveDistSquared = objectiveDist * objectiveDist;
-
-                    return objectiveDistSquared;
-                }).sum();
-
-        float dist = (float)Math.sqrt(squaredObjectiveDistsSum);
-
-        float sharingVal = (dist < shareMaxDist) ? 1 - (float)Math.pow(dist / shareMaxDist, distanceImportance) : 0;
-
-        return sharingVal;
-    }
-
-    //use the above to calculate an absolute sorting
-    public static Population sortedPopulation() {
-        return null;
-    }
-
-    public static Population tournamentSelection(Population parents) {
-        return null;
-    }
+//    private static float nichCount(Chromosome forChrom, List<Chromosome> frontOfChrom) {
+//        //compute the niching value, wich is the sum of sharing over the given chrom and paretoFront
+//        float nichingValue = (float)frontOfChrom.stream()
+//                .mapToDouble(frontChrom -> sharingFunc(forChrom, frontChrom))
+//                .sum();
+//        return nichingValue;
+//    }
+//    private static float sharingFunc(Chromosome c1, Chromosome c2) {
+//        float shareMaxDist = 3;
+//        float distanceImportance = 1; // known as "alpha"
+//
+//        //max and min objective vals should be set somewhere else
+//        List<Float> minObjectiveVals = Arrays.asList(0f, 0f);
+//        List<Float> maxObjectiveVals = Arrays.asList(10f, 10f);
+//
+//        float squaredObjectiveDistsSum = (float)IntStream.range(0, c1.objectiveValues.size())
+//                .mapToDouble(i -> {
+//                    //calculate the distance for each objective squared
+//
+//                    float c1ObjValue = c1.objectiveValues.get(i);
+//                    float c2ObjValue = c2.objectiveValues.get(i);
+//
+//                    float minObjValue = minObjectiveVals.get(i);
+//                    float maxObjValue = maxObjectiveVals.get(i);
+//
+//                    float objectiveDist = (c1ObjValue - c2ObjValue) / (maxObjValue - minObjValue);
+//                    float objectiveDistSquared = objectiveDist * objectiveDist;
+//
+//                    return objectiveDistSquared;
+//                }).sum();
+//
+//        float dist = (float)Math.sqrt(squaredObjectiveDistsSum);
+//
+//        float sharingVal = (dist < shareMaxDist) ? 1 - (float)Math.pow(dist / shareMaxDist, distanceImportance) : 0;
+//
+//        return sharingVal;
+//    }
 
 
-    public static boolean isDominatedChromosomesEmpty(List<ParetoObject> front){
+    private static boolean isDominatedChromosomesEmpty(List<ParetoObject> front){
         for(ParetoObject paretoObject: front){
             if (!paretoObject.dominatedChromosomes.isEmpty()){
                 return false;
@@ -369,7 +354,7 @@ public class NsgaParentSelector implements ParentSelector {
         return true;
     }
 
-    public static boolean hasRecessiveRankGreaterThanZero(ParetoObject paretoObject){
+    private static boolean hasRecessiveRankGreaterThanZero(ParetoObject paretoObject){
         if(paretoObject.dominatedChromosomes.isEmpty()){
             return false;
         }
@@ -381,19 +366,69 @@ public class NsgaParentSelector implements ParentSelector {
         return false;
     }
 
+    private Population tournamentSelection(Population pop) {
+        List<Chromosome> selectedChroms = new ArrayList<>();
 
-    public int populationSize;
+        List<Chromosome> concideredChroms = new ArrayList<>(pop.chromosones);
 
-    public NsgaParentSelector(int populationSIze){
-        this.populationSize = populationSIze;
+        List<List<Chromosome>> rankedFronts = nondominatedSort(pop);
+        Map<Chromosome, List<Chromosome>> frontOfChrom = new HashMap<>();
+        rankedFronts.forEach(front ->
+                front.forEach(c -> frontOfChrom.put(c, front)));
+
+        Map<List<Chromosome>, List<Chromosome>> sortedFronts = new HashMap<>();
+
+        while (selectedChroms.size() < populationSize) {
+
+            Chromosome chrom1 = concideredChroms.get( Utils.randRange(0, concideredChroms.size()) );
+            concideredChroms.remove(chrom1);
+            Chromosome chrom2 = concideredChroms.get( Utils.randRange(0, concideredChroms.size()) );
+            concideredChroms.remove(chrom2);
+
+
+            if (dominates(chrom1, chrom2)) {
+                selectedChroms.add(chrom1);
+                continue;
+            }
+            else if (dominates(chrom2, chrom1)) {
+                selectedChroms.add(chrom2);
+                continue;
+            }
+            else {
+
+                List<Chromosome> front = frontOfChrom.get(chrom1);
+                List<Chromosome> sortedFront;
+
+                if (sortedFronts.containsKey(front)) {
+                    sortedFront = sortedFronts.get(front);
+                } else {
+                    sortedFront = crowdingDistanceSort(front);
+                    sortedFronts.put(front, sortedFront);
+                }
+
+                for (Chromosome c : sortedFront) {
+                    if (c == chrom1) {
+                        selectedChroms.add(chrom1);
+                        break;
+                    } else if (c == chrom2) {
+                        selectedChroms.add(chrom2);
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        return new Population(selectedChroms);
     }
 
-    @Override
-    public Population selectParents(Population population, Population children) {
-        Plot frontPlot = new Plot();
-        List<List<Chromosome>> rankedFronts = nondominatedSort(population, children);
+    /**
+     * Reduce the population of children and parents into one of half the size
+     */
+    private Population selectBest(Population pop, List<List<Chromosome>> rankedFronts) {
 
         List<Chromosome> childPopulace = new ArrayList<>();
+
 
         for(int i = 0; i < rankedFronts.size(); i++){
 
@@ -404,14 +439,14 @@ public class NsgaParentSelector implements ParentSelector {
                 if (usableSpace >= singularFront.size()){
                     childPopulace.addAll(singularFront);
                     //Test start
-                    frontPlot.addParetoFront(singularFront);
+//                    frontPlot.addParetoFront(singularFront);
                     //Test end
                 }
                 else {
                     List<Chromosome> latestFront = crowdingDistanceSort(singularFront);
 
                     //Test start
-                    frontPlot.addParetoFront(latestFront);
+//                    frontPlot.addParetoFront(latestFront);
                     //Test end
 
                     for(int k = 0; k < usableSpace; k++){
@@ -423,14 +458,42 @@ public class NsgaParentSelector implements ParentSelector {
                 break;
             }
         }
-
         //fill until pareto split is needed
         //use crowding distances
 
-        //TODO return childPopulace
-
         Population childPopulation = new Population(childPopulace);
-
         return childPopulation;//tournamentSelection(null);
+    }
+
+
+    private int populationSize;
+    private Plot generationPlot = new Plot();
+
+
+    public NsgaParentSelector(int populationSIze){
+        this.populationSize = populationSIze;
+    }
+
+    @Override
+    public Population selectParents(Population population, Population children) {
+//        Plot frontPlot = new Plot();
+
+        Population allPop = new Population();
+        allPop.chromosones.addAll(population.chromosones);
+        allPop.chromosones.addAll(children.chromosones);
+
+        List<List<Chromosome>> rankedFronts = nondominatedSort(allPop);
+
+        //draw fronts
+        List<Chromosome> firstFront = rankedFronts.get(0);
+        generationPlot.addParetoFront(firstFront);//.stream().flatMap(f -> f.stream()).collect(Collectors.toList()));
+        Chromosome printChrom = firstFront.get(Utils.randRange(0, firstFront.size()));
+        IsegImageIO.drawGraphSeg(printChrom.graphSeg);
+
+        System.out.println("population before reduction: "+ allPop.chromosones.size());
+        Population pop = selectBest(allPop, rankedFronts);
+        System.out.println("population after reduction: " + pop.chromosones.size());
+
+        return pop;//tournamentSelection(pop);
     }
 }

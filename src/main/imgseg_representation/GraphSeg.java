@@ -36,10 +36,16 @@ public class GraphSeg {
 
         gseg.streamAll().forEach(n -> {
             GraphSegNode nnode = getNode(n.x, n.y);
-            int nextDir = n.getNextDirection();
-            GraphSegNode nNextNode = getNonDiagonalNeighbours(nnode).get(nextDir);
-            nnode.next = nNextNode;
-            nNextNode.previous.add(nnode);
+
+            if (n.next != null) {
+                int nextDir = n.getNextDirection();
+                GraphSegNode nNextNode = getNonDiagonalNeighbours(nnode).get(nextDir);
+                nnode.next = nNextNode;
+                nNextNode.previous.add(nnode);
+            }
+            else {
+                nnode.next = null;
+            }
         });
     }
     public GraphSeg(int width, int height) {

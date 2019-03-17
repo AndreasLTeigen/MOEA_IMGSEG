@@ -1,4 +1,4 @@
-package solver;
+package imgseg_solver;
 
 import imgseg_representation.Chromosome;
 import imgseg_representation.GraphSegNode;
@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class uniformCrossover {
+public class UniformCrossover {
 
     public static List<Chromosome> doUniformCrossover(Chromosome parent1, Chromosome parent2){
+
         GraphSegNode node1, node2;
         List<GraphSegNode> neighbours1, neighbours2;
 
@@ -33,10 +34,11 @@ public class uniformCrossover {
                     neighbours2 = children.get(1).graphSeg.getNeighbours(x,y);
                     nodeDirection2 = children.get(1).graphSeg.getNodeDirection(node2);
 
-                    if (node1.next != null){
+                    //remove the earlier connected nodes previous
+                    if (node1.next != null && node2.next != null){
                         node2.next.previous.remove(node2);
                     }
-                    if (node2.next != null){
+                    if (node2.next != null && node1.next != null){
                         node1.next.previous.remove(node1);
                     }
 
@@ -60,6 +62,8 @@ public class uniformCrossover {
                 }
             }
         }
+
+        children.forEach(c -> c.computeObjectives());
         return children;
     }
 }

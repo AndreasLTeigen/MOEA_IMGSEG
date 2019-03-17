@@ -32,7 +32,7 @@ public class IsegImageIO {
     }
 
     public static void drawCharomosome(Chromosome c) {
-        drawSegmentedImage(c.img, c.segmentation);
+        drawSegmentedImage(c.img, SegUtils.getSegRepresentation(c.graphSeg));
     }
 
     public static void drawSegmentedImage(Image img, Segmentation seg) {
@@ -40,6 +40,9 @@ public class IsegImageIO {
         drawImage(segImg);
     }
 
+    public static void drawGraphSeg(GraphSeg gseg) {
+        drawSegmentation(SegUtils.getSegRepresentation(gseg));
+    }
     public static void drawSegmentation(Segmentation seg) {
         Image img = createImageOfSegmentation(seg);
         drawImage(img);

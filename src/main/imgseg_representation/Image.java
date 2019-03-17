@@ -2,6 +2,7 @@ package imgseg_representation;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Image implements Cloneable{
 
@@ -17,6 +18,23 @@ public class Image implements Cloneable{
                         .collect(Collectors.toList())
                 )
                 .collect(Collectors.toList());
+    }
+
+    public Image(GraphSeg gseg) {
+        this(gseg.getWidth(), gseg.getHeight());
+    }
+    /**
+     * Create a black image to the size given
+     */
+    public Image(int width, int height) {
+        this(
+                IntStream.range(0, height)
+                        .mapToObj(y -> IntStream.range(0, width)
+                                .mapToObj(x -> new Pixel(0, 0, 0, x, y))
+                                .collect(Collectors.toList())
+                        )
+                        .collect(Collectors.toList())
+        );
     }
     public Image(List<List<Pixel>> pixels) {
         this.pixels = pixels;

@@ -11,7 +11,7 @@ public class IterationTermination implements TerminateCondition {
         this.iterations = iterations;
     }
 
-    public boolean shouldTerminate(int iteration, float bestFitness, Population pop) {
+    public boolean shouldTerminate(int iteration, Population pop) {
         return iteration >= this.iterations;
     }
 

@@ -7,7 +7,7 @@ public class Pixel implements Cloneable{
     public int y;
     public int x;
 
-    Pixel(float r, float g, float b, int x, int y) {
+    public Pixel(float r, float g, float b, int x, int y) {
         this.r = r;
         this.g = g;
         this.b = b;

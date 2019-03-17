@@ -62,6 +62,138 @@ public class SegUtils {
         }
     }
 
+    public static Segmentation getSegRepresentation(GraphSeg seg) {
+        //create a segLabel for each graph node
+        List<List<SegLabel>> segmentationLabels = seg.nodes.stream()
+                .map(nrow -> nrow.stream()
+                        .map(n -> new SegLabel(n.x, n.y))
+                        .collect(Collectors.toList())
+                )
+                .collect(Collectors.toList());
+
+        //segmentation without valid labels assigned
+        Segmentation segmentation = new Segmentation(segmentationLabels);
+
+        Set<GraphSegNode> allNodes = new HashSet<>(seg.getAllNodes());
+        Set<GraphSegNode> currSeg = new HashSet<>();
+        Set<GraphSegNode> currSegConcider = new HashSet<>();
+        int nextSegmentLabel = 0;
+
+        while(!allNodes.isEmpty()) {
+//            System.out.println("All nodes " + allNodes.size());
+            //get a node from the set
+            GraphSegNode node = allNodes.iterator().next();
+
+            //add this node to concider
+            currSegConcider.add(node);
+
+            while (!currSegConcider.isEmpty()) {
+//                System.out.println("Concider " + currSegConcider.size());
+                //get a node to concider and remove it
+                GraphSegNode segNode = currSegConcider.iterator().next();
+                currSegConcider.remove(segNode);
+
+                currSeg.add(segNode);
+
+                //add connections to concider
+                //next might be null, it is pointing to itself
+                Set<GraphSegNode> toConcider = new HashSet<>(segNode.previous);
+                if (segNode.next != null) toConcider.add(segNode.next);
+
+                //add if the nodes are not already in the current segment
+                toConcider.forEach(n -> {
+                    if (!currSeg.contains(n)) {
+                        currSegConcider.add(n);
+                    }
+                });
+            }
+
+            //set segemntation labels accoring to the retrieved nodes
+            int label = nextSegmentLabel;
+            currSeg.forEach(n -> {
+                segmentation.getLabel(n.x, n.y).label = label;
+            });
+
+            //remove the found nodes
+            allNodes.removeAll(currSeg);
+            currSeg.clear();
+            ++nextSegmentLabel;
+        }
+
+//        System.out.println("Converted to sgementation representation with segment count: " + nextSegmentLabel);
+
+        return segmentation;
+    }
+
+    public static GraphSeg createMinimalSpanningTreeInSegments(Segmentation seg, Image img) {
+
+        GraphSeg gseg = new GraphSeg(img);
+        gseg.streamAll().forEach(n -> n.next = NULL_NODE);
+
+        //map segments to graphseg segments
+        List<List<GraphSegNode>> gsegments = seg.getSegmentations().stream()
+                .map(lseg -> lseg.stream()
+                        .map(l -> gseg.getNode(l))
+                        .collect(Collectors.toList())
+                )
+                .collect(Collectors.toList());
+
+        Map<GraphSegNode, List<GraphSegNode>> segmentOfNode = new HashMap<>();
+        gsegments.forEach(segment -> segment.forEach(n -> segmentOfNode.put(n ,segment)));
+
+
+        int i = 0;
+        for (List<GraphSegNode> segment : gsegments) {
+
+//            System.out.println("Starting segment " + ++i);
+
+//            GraphSegNode startNode = segment.get(0);
+            GraphSegNode startNode = segment.get(Utils.randRange(0, segment.size()));
+
+            PriorityQueue<NodeEdge> concideredNodes = new PriorityQueue<>();
+            int nodesAssigend = 0;
+
+            concideredNodes.add(new NodeEdge(null, startNode, img));
+
+
+            while(nodesAssigend < segment.size()) {
+
+                NodeEdge currNodeEdge = concideredNodes.poll();
+
+                //skip if this node is already in the tree
+                if (currNodeEdge.toNode.next != NULL_NODE) {
+                    //if there are no concidered nodes left, the tree cannot be completed.
+                    // Happens if segments given are not nonDiagonaly connected
+                    if (concideredNodes.size() == 0) {
+                        drawInvalidSegments(gseg, segment, currNodeEdge.toNode);
+                    }
+
+                    continue;
+                }
+
+                if (currNodeEdge.fromNode != null) {
+                    //point the end to the start
+                    currNodeEdge.toNode.next = currNodeEdge.fromNode;
+                    currNodeEdge.fromNode.previous.add(currNodeEdge.toNode);
+                } else {
+                    currNodeEdge.toNode.next = null;
+                }
+                ++nodesAssigend;
+
+                //concider neighbours
+                gseg.getNonDiagonalNeighbours(currNodeEdge.toNode).stream()
+                        .filter(Objects::nonNull)
+                        .filter(nbour -> segmentOfNode.get(nbour) == segmentOfNode.get(currNodeEdge.toNode))
+//                        .filter(nbour -> segment.contains(nbour)) //make sure the neighbour belongs to the same segment
+                        .filter(nbour -> nbour.next == NULL_NODE) //filter out assigned nodes
+                        .forEach(nbour -> concideredNodes.add(new NodeEdge(currNodeEdge.toNode, nbour, img)));
+            }
+        }
+
+        return gseg;
+    }
+
+    @Deprecated
     public static void reduceSegmentsBySize(GraphSeg gseg, Image img, List<GsegSegment> gsegSegments) {
         Comparator<GsegSegment> segSizeComparator = (s1, s2) -> s1.nodes.size() - s2.nodes.size();
         PriorityQueue<GsegSegment> segsSizes = new PriorityQueue<>(gsegSegments.size(), segSizeComparator);
@@ -200,6 +332,7 @@ public class SegUtils {
     /**
      * TODO: Does not update the given segments
      */
+    @Deprecated
     public static void reduceSegmentsByColor(List<GsegSegment> gsegSegments) {
 
 //        IsegImageIO.drawSegmentation(getSegRepresentation(gseg));
@@ -232,106 +365,33 @@ public class SegUtils {
 
     }
 
-    public static GraphSeg createMinimalSpanningTreeInSegments(Segmentation seg, Image img) {
-
-        GraphSeg gseg = new GraphSeg(img);
-        gseg.streamAll().forEach(n -> n.next = NULL_NODE);
-
-        //map segments to graphseg segments
-        List<List<GraphSegNode>> gsegments = seg.getSegmentations().stream()
-                .map(lseg -> lseg.stream()
-                        .map(l -> gseg.getNode(l))
-                        .collect(Collectors.toList())
-                )
-                .collect(Collectors.toList());
-
-        Map<GraphSegNode, List<GraphSegNode>> segmentOfNode = new HashMap<>();
-        gsegments.forEach(segment -> segment.forEach(n -> segmentOfNode.put(n ,segment)));
-
-//        gsegments = new ArrayList<>();
-//        gsegments.add(new ArrayList<>(gseg.getAllNodes()));
-
-//        gsegments.forEach(gsegment -> System.out.println(gsegment.size()));
-//        seg.getSegmentations().forEach(segment -> System.out.println(segment.size()));
-//        System.out.println(gsegments.get(0) == gsegments.get(1));
-
-        int i = 0;
-        for (List<GraphSegNode> segment : gsegments) {
-
-            System.out.println("Starting segment " + ++i);
-            GraphSegNode startNode = segment.get(0);
-//            GraphSegNode startNode = segment.get(Utils.randRange(0, segment.size()));
-
-            PriorityQueue<NodeEdge> concideredNodes = new PriorityQueue<>();
-            int nodesAssigend = 0;
-
-            concideredNodes.add(new NodeEdge(null, startNode, img));
 
 
-            while(nodesAssigend < segment.size()) {
-//                System.out.println("concidered nodes left: " + concideredNodes.size());
-//                System.out.println("segment size: " + segment.size());
-//                System.out.println("nodes assigned: " + nodesAssigend);
+    private static void drawInvalidSegments(GraphSeg gseg, List<GraphSegNode> segment, GraphSegNode currNode) {
 
-                NodeEdge currNodeEdge = concideredNodes.poll();
+        System.err.println("Did not complete :(");
 
-                //skip if this node is already in the tree
-                if (currNodeEdge.toNode.next != NULL_NODE) {
-                    if (concideredNodes.size() == 0) {
-                        System.err.println("KAAKAKA");
-//                        int[] coords = {-10, -9, -8, -7, -6, -5, -4, 4, 5, 6, 7, 8, 9, 10};
-//                        for (int x = 0; x < coords.length; x++) {
-//                            SegLabel lab = seg.getLabel(currNodeEdge.toNode.x + coords[x], currNodeEdge.toNode.y + coords[x]);
-//                            lab.label = 0;
-//
-//                        }
-                        Image im = new Image(img);
-                        segment.stream()
-                                .forEach(n -> {
-                                    SegLabel lab = seg.getLabel(n.x, n.y);
-                                    if (n.next != NULL_NODE) {
-                                        im.getPixel(lab).b = 1;
-                                    }
-                                    else {
-                                        im.getPixel(lab).g = 1;
-                                    }
-                                });
-                        im.getPixel(currNodeEdge.toNode).r = 1;
-
-                        System.err.println("Did not complete :(");
-                        IsegImageIO.drawImage(im);
-                        gseg.streamAll()
-                                .filter(n -> n.next == NULL_NODE)
-                                .forEach(n -> n.next = null);
-                        return gseg;
+        Image im = new Image(gseg);
+        segment.stream()
+                .forEach(n -> {
+                    if (n.next != NULL_NODE) {
+                        im.getPixel(n).b = 1;
                     }
-                    continue;
-                }
+                    else {
+                        im.getPixel(n).g = 1;
+                    }
+                });
+        im.getPixel(currNode).r = 1;
 
-                if (currNodeEdge.fromNode != null) {
-                    //point the end to the start
-                    currNodeEdge.toNode.next = currNodeEdge.fromNode;
-                    currNodeEdge.fromNode.previous.add(currNodeEdge.toNode);
-                } else {
-                    currNodeEdge.toNode.next = null;
-                }
-                ++nodesAssigend;
+        IsegImageIO.drawImage(im);
+//            gseg.streamAll()
+//                    .filter(n -> n.next == NULL_NODE)
+//                    .forEach(n -> n.next = null);
+//            return gseg;
 
-                //concider neighbours
-                gseg.getNonDiagonalNeighbours(currNodeEdge.toNode).stream()
-                        .filter(Objects::nonNull)
-                        .filter(nbour -> segmentOfNode.get(nbour) == segmentOfNode.get(currNodeEdge.toNode))
-//                        .filter(nbour -> segment.contains(nbour)) //make sure the neighbour belongs to the same segment
-                        .filter(nbour -> nbour.next == NULL_NODE) //filter out assigned nodes
-                        .forEach(nbour -> concideredNodes.add(new NodeEdge(currNodeEdge.toNode, nbour, img)));
-
-
-            }
-        }
-
-        return gseg;
     }
 
+    @Deprecated
     public static GraphSeg createMinimalSpanningTree(Image img, List<GsegSegment> getSegments) {
         //a class to represent color distance between two nodes
         class DistToNode implements Comparable<DistToNode> {
@@ -454,6 +514,7 @@ public class SegUtils {
         return gseg;
     }
 
+    @Deprecated
     public static List<List<Pixel>> getSubimagesBySegmentation(Segmentation seg, Image img) {
         seg.getSegmentations().stream()
                 .map(segment ->
@@ -465,6 +526,7 @@ public class SegUtils {
         return null;
     }
 
+    @Deprecated
     public static GraphSeg createMinimalSpanningTreeWithinSegments(Segmentation seg, Image img) {
         return null;
     }
@@ -533,68 +595,7 @@ public class SegUtils {
         return closestLab;
     }
 
-    public static Segmentation getSegRepresentation(GraphSeg seg) {
-        //create a segLabel for each graph node
-        List<List<SegLabel>> segmentationLabels = seg.nodes.stream()
-                .map(nrow -> nrow.stream()
-                        .map(n -> new SegLabel(n.x, n.y))
-                        .collect(Collectors.toList())
-                )
-                .collect(Collectors.toList());
 
-        //segmentation without valid labels assigned
-        Segmentation segmentation = new Segmentation(segmentationLabels);
-
-        Set<GraphSegNode> allNodes = new HashSet<>(seg.getAllNodes());
-        Set<GraphSegNode> currSeg = new HashSet<>();
-        Set<GraphSegNode> currSegConcider = new HashSet<>();
-        int nextSegmentLabel = 0;
-
-        while(!allNodes.isEmpty()) {
-//            System.out.println("All nodes " + allNodes.size());
-            //get a node from the set
-            GraphSegNode node = allNodes.iterator().next();
-
-            //add this node to concider
-            currSegConcider.add(node);
-
-            while (!currSegConcider.isEmpty()) {
-//                System.out.println("Concider " + currSegConcider.size());
-                //get a node to concider and remove it
-                GraphSegNode segNode = currSegConcider.iterator().next();
-                currSegConcider.remove(segNode);
-
-                currSeg.add(segNode);
-
-                //add connections to concider
-                //next might be null, it is pointing to itself
-                Set<GraphSegNode> toConcider = new HashSet<>(segNode.previous);
-                if (segNode.next != null) toConcider.add(segNode.next);
-
-                //add if the nodes are not already in the current segment
-                toConcider.forEach(n -> {
-                    if (!currSeg.contains(n)) {
-                        currSegConcider.add(n);
-                    }
-                });
-            }
-
-            //set segemntation labels accoring to the retrieved nodes
-            int label = nextSegmentLabel;
-            currSeg.forEach(n -> {
-                segmentation.getLabel(n.x, n.y).label = label;
-            });
-
-            //remove the found nodes
-            allNodes.removeAll(currSeg);
-            currSeg.clear();
-            ++nextSegmentLabel;
-        }
-
-        System.out.println("Converted to sgementation representation with segment count: " + nextSegmentLabel);
-
-        return segmentation;
-    }
 
 //    public static GraphSeg createMinimalSpanningTree(Image img) {
 //        //a class to represent color distance between two nodes

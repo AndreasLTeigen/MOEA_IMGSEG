@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 public class SegUtilsTest {
 
@@ -21,7 +22,7 @@ public class SegUtilsTest {
     public void testCreateMinimalSpanningTree() {
         Chromosome c = createChomosome();
         IsegImageIO.drawCharomosome(c);
-        IsegImageIO.drawSegmentation(c.segmentation);
+//        IsegImageIO.drawSegmentation(c.segmentation);
 
         List<SegUtils.GsegSegment> segs = new ArrayList<>();
         GraphSeg gseg = SegUtils.createMinimalSpanningTree(c.img, segs);
@@ -41,46 +42,59 @@ public class SegUtilsTest {
     public void testCreateMinimalSpanningTreeInSegments() {
         Chromosome c = createChomosome();
         IsegImageIO.drawCharomosome(c);
-        IsegImageIO.drawSegmentation(c.segmentation);
+        IsegImageIO.drawSegmentation(SegUtils.getSegRepresentation(c.graphSeg));
 
-        GraphSeg gseg = SegUtils.createMinimalSpanningTreeInSegments(c.segmentation, c.img);
-        System.out.println("Converted segments to graph");
-
-//        System.out.println(gseg);
-
-        Segmentation newSeg = SegUtils.getSegRepresentation(gseg);
-        System.out.println("Converted back");
-        IsegImageIO.drawSegmentation(newSeg);
-
-
-        new Scanner(System.in).nextLine();
+////        GraphSeg gseg = SegUtils.createMinimalSpanningTreeInSegments(c.segmentation, c.img);
+//
+//        System.out.println("Converted segments to graph");
+//
+////        System.out.println(gseg);
+//
+//        Segmentation newSeg = SegUtils.getSegRepresentation(gseg);
+//        System.out.println("Converted back");
+//        IsegImageIO.drawSegmentation(newSeg);
+//
+//        //benchmark minimalSpanningTree in sgemnts
+//        long startTime = System.currentTimeMillis();
+//        IntStream.range(0, 10)
+//                .forEach(i -> SegUtils.createMinimalSpanningTreeInSegments(c.segmentation, c.img));
+//        long deltaMillis = System.currentTimeMillis() - startTime;
+//        System.out.println("mst in segment time: " + deltaMillis/10);
+//
+//        startTime = System.currentTimeMillis();
+//        IntStream.range(0, 10)
+//                .forEach(i -> SegUtils.getSegRepresentation(gseg));
+//        deltaMillis = System.currentTimeMillis() - startTime;
+//        System.out.println("convert to seg representation time: " + deltaMillis/10);
+//
+//        new Scanner(System.in).nextLine();
     }
 
     public void testSegmentationConversion() {
 
-        Image img = IsegImageIO.loadImage("images/86016/Test image.jpg");
-        Problem p = new Problem(img);
-
-        IsegImageIO.drawImage(img);
-
-        Chromosome c = HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000);
-
-        IsegImageIO.drawSegmentation(c.segmentation);
-
-        //convert to graph seg
-        GraphSeg graphSeg = SegUtils.getClosestNeighbourGraphRepresentation(c.segmentation, img);
-
-        System.out.println(graphSeg);
-
-        System.out.println("Converted to graphSeg");
-
-        //convert back
-        Segmentation sameSeg = SegUtils.getSegRepresentation(graphSeg);
-        System.out.println("Converted to segmentation");
-
-        IsegImageIO.drawSegmentation(sameSeg);
-
-        //wait fo rinput to close
-        new Scanner(System.in).nextLine();
+//        Image img = IsegImageIO.loadImage("images/86016/Test image.jpg");
+//        Problem p = new Problem(img);
+//
+//        IsegImageIO.drawImage(img);
+//
+//        Chromosome c = HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000);
+//
+//        IsegImageIO.drawSegmentation(c.segmentation);
+//
+//        //convert to graph seg
+//        GraphSeg graphSeg = SegUtils.getClosestNeighbourGraphRepresentation(c.segmentation, img);
+//
+//        System.out.println(graphSeg);
+//
+//        System.out.println("Converted to graphSeg");
+//
+//        //convert back
+//        Segmentation sameSeg = SegUtils.getSegRepresentation(graphSeg);
+//        System.out.println("Converted to segmentation");
+//
+//        IsegImageIO.drawSegmentation(sameSeg);
+//
+//        //wait fo rinput to close
+//        new Scanner(System.in).nextLine();
     }
 }

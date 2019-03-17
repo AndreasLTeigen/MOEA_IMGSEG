@@ -1,32 +1,38 @@
-package solver;
+package imgseg_solver;
 
 import imgseg_representation.Chromosome;
 import imgseg_representation.GraphSegNode;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
-public class simpleMutation {
+public class SimpleMutation {
 
-    public static Chromosome mutate(Chromosome chromosome, int x, int y){
+    private static Chromosome mutate(Chromosome chromosome, int x, int y){
         int randomDirection;
         Random randDir = new Random();
         GraphSegNode node;
         List<GraphSegNode> neighbours;
 
         node = chromosome.graphSeg.getNode(x,y);
-        neighbours = chromosome.graphSeg.getNeighbours(x,y);
 
-        randomDirection = randDir.nextInt(5);
-
-        if (node.next != null){
+        if (node.next != null) {
             node.next.previous.remove(node);
         }
 
+        randomDirection = randDir.nextInt(5);
         if (randomDirection == 4){
             node.next = null;
         }
-        else{
+        else {
+            neighbours = chromosome.graphSeg.getNeighbours(x, y).stream()
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            randomDirection = randDir.nextInt(neighbours.size());
+
             node.next = neighbours.get(randomDirection);
             node.next.previous.add(node);
         }

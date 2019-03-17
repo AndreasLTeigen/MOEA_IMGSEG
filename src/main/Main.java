@@ -18,50 +18,65 @@ import java.util.stream.Stream;
 public class Main{
     public static void main(String[] args){
 
-        Image img = IsegImageIO.loadImage("images/86016/Test image.jpg");
+        Image img = IsegImageIO.loadImage("images/147091/Test image.jpg");
         Problem p = new Problem(img);
 
-
-//        GeneticSolver solver = new IsegSolver();
-//        solver.popSize = 2;
-//        solver.solve(p);
-
-        int chromCount = 10;
-
-        Plot plot = new Plot();
-        //HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000))
-        List<Chromosome> chroms = Stream.generate(() -> {
-                    Chromosome c = RandomPopulationInitializer.createRandomChromosome(p);
-                    c.computeObjectives();
-                    plot.addParetoFront(Arrays.asList(c));
-                    return c;
-                })
-                .limit(chromCount).collect(Collectors.toList());
-
-        List<Chromosome> chroms2 = Stream.generate(() -> {
-            Chromosome c = RandomPopulationInitializer.createRandomChromosome(p);
-            c.computeObjectives();
-            plot.addParetoFront(Arrays.asList(c));
-            return c;
-        })
-                .limit(chromCount).collect(Collectors.toList());
-
-        //compute objectives
-        chroms.forEach(Chromosome::computeObjectives);
-
-        NsgaParentSelector parentSelector = new NsgaParentSelector(chromCount);
-        Population populace1 = new Population();
-        populace1.chromosones = chroms;
-        Population populace2 = new Population();
-        populace2.chromosones = chroms2;
-        populace1 =  parentSelector.selectParents(populace1, populace2);
-        
-        //Plot.PlotObjectiveValues(chroms);
-        //chroms.forEach(Chromosome::computeObjectives);
+//        Chromosome chrom = HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000);
+//        Chromosome chromCopy = chrom.clone();
+//        IsegImageIO.drawGraphSeg(chrom.graphSeg);
+//        IsegImageIO.drawGraphSeg(chromCopy.graphSeg);
+//        Segmentation seg1 = SegUtils.getSegRepresentation(chrom.graphSeg);
+//        Segmentation seg2 = SegUtils.getSegRepresentation(chromCopy.graphSeg);
+//        System.out.println("original segments; " + seg1.getSegmentations().size());
+//        System.out.println("copy segments: " + seg2.getSegmentations().size());
 
 
-        List<Integer> segemntCounts = chroms.stream().map(c -> c.segmentation.getSegmentations().size())
-                .collect(Collectors.toList());
+        IsegImageIO.drawImage(img);
+
+
+        IsegSolver solver = new IsegSolver(p);
+        solver.populationSize = 10;
+        solver.iterations = 200;
+
+        solver.init();
+//        solver.solve();
+
+//        int chromCount = 10;
+
+//        Plot plot = new Plot();
+//        //HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000))
+//        List<Chromosome> chroms = Stream.generate(() -> {
+//                    Chromosome c = RandomPopulationInitializer.createRandomChromosome(p);
+//                    c.computeObjectives();
+//                    plot.addParetoFront(Arrays.asList(c));
+//                    return c;
+//                })
+//                .limit(chromCount).collect(Collectors.toList());
+//
+//        List<Chromosome> chroms2 = Stream.generate(() -> {
+//            Chromosome c = RandomPopulationInitializer.createRandomChromosome(p);
+//            c.computeObjectives();
+//            plot.addParetoFront(Arrays.asList(c));
+//            return c;
+//        })
+//                .limit(chromCount).collect(Collectors.toList());
+//
+//        //compute objectives
+//        chroms.forEach(Chromosome::computeObjectives);
+//
+//        NsgaParentSelector parentSelector = new NsgaParentSelector(chromCount);
+//        Population populace1 = new Population();
+//        populace1.chromosones = chroms;
+//        Population populace2 = new Population();
+//        populace2.chromosones = chroms2;
+//        populace1 =  parentSelector.selectParents(populace1, populace2);
+//
+//        //Plot.PlotObjectiveValues(chroms);
+//        //chroms.forEach(Chromosome::computeObjectives);
+//
+//
+//        List<Integer> segemntCounts = chroms.stream().map(c -> c.segmentation.getSegmentations().size())
+//                .collect(Collectors.toList());
 
 //        System.out.println("seg deviation: " + chroms.stream().map(c -> c.objectiveValues.get(Chromosome.overallDeviationIndex)).collect(Collectors.toList()));
 //        System.out.println("seg connectivities: " + chroms.stream().map(c -> c.objectiveValues.get(Chromosome.connectivityIndex)).collect(Collectors.toList()));

@@ -4,104 +4,11 @@ import imgseg_representation.*;
 import solver.PopulationInitializer;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class HeuristicPopulationInitializer implements PopulationInitializer {
 
-    public static Chromosome HeuristicInitializerOld1(Problem p, float distanceThreshold){
-        /*
 
-        Initialization assigns segmentation to a pixel equal to the the most similar of the neighbour pixels
-        if the neighbour pixels has an assigned segmentation. If no neighbour pixel surpasses the threshold
-        a brand new segmentation label is assigned to the pixel
-
-         */
-        Image img = p.img;
-        Chromosome chromosome = new Chromosome(p.img);
-
-        int segmentationCount;
-        double pixelDistance, closestPixelDistance;
-        List<SegLabel> neighbours;
-        SegLabel neighbour, mostSimilarNeighbour;
-
-        //chromosome.segmentation.setLabelValue(0,0,0);
-        segmentationCount = 0;
-
-        for (int y = 0; y < chromosome.segmentation.getHeight(); y++){
-            for (int x = 0; x < chromosome.segmentation.getWidth(); x++){
-                mostSimilarNeighbour = null;
-                closestPixelDistance = Math.sqrt(3);
-                neighbours = chromosome.segmentation.getNeighbours(x, y);
-                for(int neighbourNr = 0; neighbourNr < neighbours.size(); neighbourNr++){
-                    neighbour = neighbours.get(neighbourNr);
-                    if (neighbour != null && neighbour.label != -1){
-                        pixelDistance = img.getPixel(x,y).getPixelDistance(img.getPixel(neighbour));
-                        if (pixelDistance < closestPixelDistance && pixelDistance < distanceThreshold){
-                            closestPixelDistance = pixelDistance;
-                            mostSimilarNeighbour = neighbour;
-                        }
-                    }
-                }
-                if (mostSimilarNeighbour != null){
-                    chromosome.segmentation.setLabelValue(x, y, mostSimilarNeighbour.label);
-                }
-                else {
-                    chromosome.segmentation.setLabelValue(x, y, segmentationCount);
-                    segmentationCount += 1;
-                }
-            }
-        }
-        return chromosome;
-    }
-
-    public static Chromosome HeuristicInitializerOld2(Chromosome chromosome, Image img, double distanceThreshold){
-        /*
-
-        Initialization assigns segmentation to a pixel equal to the the most similar of the neighbour pixels
-        if the neighbour pixels has an assigned segmentation. If no neighbour pixel surpasses the threshold
-        a brand new segmentation label is assigned to the pixel
-
-         */
-
-        int segmentationCount;
-        double pixelDistance, closestPixelDistance;
-        SegLabel neighbour, mostSimilarNeighbour;
-
-        chromosome.segmentation.setLabelValue(0,0,0);
-        segmentationCount = 1;
-
-        for (int x = 1; x <chromosome.segmentation.getWidth(); x++){
-            pixelDistance = img.getPixel(x, 0).getPixelDistance(img.getPixel(x-1, 0));
-            if(pixelDistance > distanceThreshold){
-                segmentationCount += 1;
-            }
-            chromosome.segmentation.setLabelValue(x,0, segmentationCount);
-        }
-
-        for (int y = 1; y < chromosome.segmentation.getHeight(); y++){
-            for (int x = 0; x < chromosome.segmentation.getWidth(); x++){
-                mostSimilarNeighbour = null;
-                closestPixelDistance = Math.sqrt(3);
-                for(int neighbourNr = 0; neighbourNr < chromosome.segmentation.getWidth(); neighbourNr++){
-                    neighbour = chromosome.segmentation.getLabel(neighbourNr,y-1);
-                    if (neighbour != null && neighbour.label != -1){
-                        pixelDistance = img.getPixel(x,y).getPixelDistance(img.getPixel(neighbour));
-                        if (pixelDistance < closestPixelDistance && pixelDistance < distanceThreshold){
-                            closestPixelDistance = pixelDistance;
-                            mostSimilarNeighbour = neighbour;
-                        }
-                    }
-                }
-                if (mostSimilarNeighbour != null){
-                    chromosome.segmentation.setLabelValue(x, y, mostSimilarNeighbour.label);
-                }
-                else {
-                    chromosome.segmentation.setLabelValue(x, y, segmentationCount);
-                    segmentationCount += 1;
-                }
-            }
-        }
-        return chromosome;
-    }
 
     /**
      * Place every pixel in a bin based on their intensity
@@ -109,13 +16,13 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
     public static Chromosome HeuristicInitializer(Problem p, int numBins, int smallesSegmentSize) {
 
         Image img = p.img;
-        Chromosome chromosome = new Chromosome(p.img);
+        Segmentation seg = new Segmentation(img);
 
         int binNr;
         double pixelIntensity;
         Pixel pixel;
-        for (int y = 0; y < chromosome.segmentation.getHeight(); y++) {
-            for (int x = 0; x < chromosome.segmentation.getWidth(); x++) {
+        for (int y = 0; y < seg.getHeight(); y++) {
+            for (int x = 0; x < seg.getWidth(); x++) {
                 pixel = img.getPixel(x, y);
                 pixelIntensity = pixel.getPixelIntensity();
                 if (pixelIntensity == Math.sqrt(3)) {
@@ -123,7 +30,7 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
                 } else {
                     binNr = (int) (pixelIntensity / (Math.sqrt(3) / numBins));
                 }
-                chromosome.segmentation.setLabelValue(x, y, binNr);
+                seg.setLabelValue(x, y, binNr);
             }
         }
 
@@ -143,16 +50,17 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
             neighbourBinCount.add(0);
         }
 
-        Chromosome tempChromosome = new Chromosome(img);
-        for (int y = 0; y < chromosome.segmentation.getHeight(); y++) {
-            for (int x = 0; x < chromosome.segmentation.getWidth(); x++) {
+//        Chromosome tempChromosome = new Chromosome(img);
+        Segmentation tempSeg = new Segmentation(img);
+        for (int y = 0; y < seg.getHeight(); y++) {
+            for (int x = 0; x < seg.getWidth(); x++) {
 
                 //Empty neighbourBinCount list
                 for (int i = 0; i < numBins; i++) {
                     neighbourBinCount.set(i, 0);
                 }
 
-                neighbours = chromosome.segmentation.getNonDiagonalNeighbours(x, y);
+                neighbours = seg.getNonDiagonalNeighbours(x, y);
                 largestBin = 0;
                 for (SegLabel neighbour : neighbours) {
                     if (neighbour != null) {
@@ -164,7 +72,7 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
                         largestBin = i;
                     }
                 }
-                tempChromosome.segmentation.setLabelValue(x, y, largestBin);
+                tempSeg.setLabelValue(x, y, largestBin);
             }
         }
 
@@ -177,34 +85,40 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
         Seperate all color patches into its own segment
 
          */
-        chromosome = new Chromosome(img);
+//        chromosome = new Chromosome(img);
+        seg = new Segmentation(img);
         int currentLabel;
         SegLabel currentSegLabel;
         List<Integer> segmentCounter = new ArrayList<>();
-        for (int y = 0; y < chromosome.segmentation.getHeight(); y++){
-            for (int x = 0; x < chromosome.segmentation.getWidth(); x++){
-                if (chromosome.segmentation.getLabelValue(x,y) == -1) {
+        for (int y = 0; y < seg.getHeight(); y++){
+            for (int x = 0; x < seg.getWidth(); x++){
+                if (seg.getLabelValue(x,y) == -1) {
                     segmentCounter.add(1);
                     currentLabel = segmentCounter.size() - 1;
-                    chromosome.segmentation.setLabelValue(x,y, currentLabel);
-                    currentSegLabel = tempChromosome.segmentation.getLabel(x, y);
-                    segmentCounter = markNeighboursInSegmentIterative(chromosome.segmentation, tempChromosome.segmentation, currentSegLabel, currentLabel, segmentCounter);
+                    seg.setLabelValue(x,y, currentLabel);
+                    currentSegLabel = tempSeg.getLabel(x, y);
+                    segmentCounter = markNeighboursInSegmentIterative(seg, tempSeg, currentSegLabel, currentLabel, segmentCounter);
                 }
             }
         }
         //chromosome.segmentation = combineSegmentsLargerThanReccursonDepth(tempChromosome.segmentation, chromosome.segmentation);
-        chromosome.segmentation = deleteSegmentsSmallerThan(smallesSegmentSize, chromosome.segmentation);
-        chromosome.segmentation = reIndexSegments(chromosome.segmentation);
+        seg = deleteSegmentsSmallerThan(smallesSegmentSize, seg);
+        seg = reIndexSegments(seg);
         //System.out.println(chromosome.segmentation.toString());
         //deleteSegmentsSmallerThan(smallesSegmentSize, chromosome.segmentation, segmentCounter);
         //deleteSegmentsSmallerThan(smallesSegmentSize, chromosome.segmentation, segmentCounter);
 
         //System.out.println(segmentCounter.toString());
         //System.out.println(chromosome.segmentation.toString());
-        return chromosome;
+
+        //convert segmentation to graphRepresentation
+        GraphSeg gseg = SegUtils.createMinimalSpanningTreeInSegments(seg, img);
+        Chromosome chrom = new Chromosome(img);
+        chrom.graphSeg = gseg;
+        return chrom;
     }
 
-    public static List<Integer> markNeighboursInSegmentIterative(Segmentation segmentation, Segmentation binSegmentation, SegLabel segLabel, int currentLabel, List<Integer> segmentCounter){
+    private static List<Integer> markNeighboursInSegmentIterative(Segmentation segmentation, Segmentation binSegmentation, SegLabel segLabel, int currentLabel, List<Integer> segmentCounter){
         SegLabel currentSegLabel;
         List<SegLabel> neighbours;
         List<SegLabel> segment = new ArrayList<>();
@@ -225,7 +139,7 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
         return segmentCounter;
     }
 
-    public static List<Integer> markNeighboursInSegment(Segmentation segmentation, Segmentation binSegmentation, SegLabel segLabel, int currentLabel, List<Integer> segmentCounter){
+    private static List<Integer> markNeighboursInSegment(Segmentation segmentation, Segmentation binSegmentation, SegLabel segLabel, int currentLabel, List<Integer> segmentCounter){
         SegLabel newSegLabel;
         List<SegLabel> neighbours;
 
@@ -246,7 +160,7 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
         return segmentCounter;
     }
 
-    public static Segmentation reIndexSegments(Segmentation segmentation){
+    private static Segmentation reIndexSegments(Segmentation segmentation){
         boolean segmentInList;
         List<Integer> segmentList = new ArrayList<>();
 
@@ -282,7 +196,7 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
         return segmentation;
     }
 
-    public static Segmentation deleteSegmentsSmallerThanOld(int size, Segmentation segmentation, List<Integer> segmentCounter){
+    private static Segmentation deleteSegmentsSmallerThanOld(int size, Segmentation segmentation, List<Integer> segmentCounter){
         //Problems with the first pixel, changing it to the first segment that is large enough
         for (int i = 0; i < segmentCounter.size(); i++){
             if (segmentCounter.get(i) > size){
@@ -312,7 +226,7 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
         return segmentation;
     }
 
-    public static Segmentation deleteSegmentsSmallerThan(int size, Segmentation segmentation){
+    private static Segmentation deleteSegmentsSmallerThan(int size, Segmentation segmentation){
         /*
 
         Find out how large each segment is
@@ -407,7 +321,7 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
         return segmentation;
     }
 
-    public static int getLargestSegmentValue(Segmentation segmentation){
+    private static int getLargestSegmentValue(Segmentation segmentation){
         int numSegments = 0;
         for (int y = 0; y < segmentation.getHeight(); y++) {
             for (int x = 0; x < segmentation.getWidth(); x++) {
@@ -419,7 +333,7 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
         return numSegments;
     }
 
-    public static int getMostFrequentValidLabelIn(List<Integer> list, List<Integer> segmentCounter, int size){
+    private static int getMostFrequentValidLabelIn(List<Integer> list, List<Integer> segmentCounter, int size){
         int mostFreqLabel, highestFreq, frequenzy;
         mostFreqLabel = -1;
         highestFreq = 0;
@@ -436,7 +350,7 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
         return mostFreqLabel;
     }
 
-    public static Segmentation combineSegmentsLargerThanReccursonDepth(Segmentation binSegmentation, Segmentation segmentation){
+    private static Segmentation combineSegmentsLargerThanReccursonDepth(Segmentation binSegmentation, Segmentation segmentation){
         for(int y = 0; y < segmentation.getHeight()-1; y++){
             for (int x = 0; x < segmentation.getWidth()-1; x++){
                 if(binSegmentation.getLabelValue(x,y) == binSegmentation.getLabelValue(x+1,y) && segmentation.getLabelValue(x,y) != segmentation.getLabelValue(x+1,y)){
@@ -454,7 +368,7 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
         return segmentation;
     }
 
-    public static Segmentation updateSegmentValues(Segmentation segmentation, int oldSegmentValue, int newSegmentValue){
+    private static Segmentation updateSegmentValues(Segmentation segmentation, int oldSegmentValue, int newSegmentValue){
         //ImageUtils.drawSegmentation(segmentation);
         for(int y = 0; y < segmentation.getHeight(); y++) {
             for (int x = 0; x < segmentation.getWidth(); x++) {
@@ -466,8 +380,126 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
         return segmentation;
     }
 
+    private int popSize;
+    private Problem p;
+
+    public HeuristicPopulationInitializer(Problem p, int popSize) {
+        this.popSize = popSize;
+        this.p = p;
+    }
+
     @Override
-    public Population initPopulation(Problem p, int populationSize) {
-        return null;
+    public Population initPopulation() {
+        int binCount = 3;
+        int smallestSegmentSize = 1000;
+
+        Population pop = new Population();
+
+        for (int i = 0; i < popSize; i++) {
+            Chromosome c = HeuristicPopulationInitializer.HeuristicInitializer(p, binCount, smallestSegmentSize);
+            c.computeObjectives();
+
+            pop.chromosones.add(c);
+            System.out.println("created initial individual (" + (i+1) + " / " + popSize + ")");
+        }
+
+        return pop;
     }
 }
+
+
+//    private static Chromosome HeuristicInitializerOld1(Problem p, float distanceThreshold){
+//        /*
+//
+//        Initialization assigns segmentation to a pixel equal to the the most similar of the neighbour pixels
+//        if the neighbour pixels has an assigned segmentation. If no neighbour pixel surpasses the threshold
+//        a brand new segmentation label is assigned to the pixel
+//
+//         */
+//        Image img = p.img;
+//        Chromosome chromosome = new Chromosome(p.img);
+//
+//        int segmentationCount;
+//        double pixelDistance, closestPixelDistance;
+//        List<SegLabel> neighbours;
+//        SegLabel neighbour, mostSimilarNeighbour;
+//
+//        //chromosome.segmentation.setLabelValue(0,0,0);
+//        segmentationCount = 0;
+//
+//        for (int y = 0; y < chromosome.segmentation.getHeight(); y++){
+//            for (int x = 0; x < chromosome.segmentation.getWidth(); x++){
+//                mostSimilarNeighbour = null;
+//                closestPixelDistance = Math.sqrt(3);
+//                neighbours = chromosome.segmentation.getNeighbours(x, y);
+//                for(int neighbourNr = 0; neighbourNr < neighbours.size(); neighbourNr++){
+//                    neighbour = neighbours.get(neighbourNr);
+//                    if (neighbour != null && neighbour.label != -1){
+//                        pixelDistance = img.getPixel(x,y).getPixelDistance(img.getPixel(neighbour));
+//                        if (pixelDistance < closestPixelDistance && pixelDistance < distanceThreshold){
+//                            closestPixelDistance = pixelDistance;
+//                            mostSimilarNeighbour = neighbour;
+//                        }
+//                    }
+//                }
+//                if (mostSimilarNeighbour != null){
+//                    chromosome.segmentation.setLabelValue(x, y, mostSimilarNeighbour.label);
+//                }
+//                else {
+//                    chromosome.segmentation.setLabelValue(x, y, segmentationCount);
+//                    segmentationCount += 1;
+//                }
+//            }
+//        }
+//        return chromosome;
+//    }
+//
+//    private static Chromosome HeuristicInitializerOld2(Chromosome chromosome, Image img, double distanceThreshold){
+//        /*
+//
+//        Initialization assigns segmentation to a pixel equal to the the most similar of the neighbour pixels
+//        if the neighbour pixels has an assigned segmentation. If no neighbour pixel surpasses the threshold
+//        a brand new segmentation label is assigned to the pixel
+//
+//         */
+//
+//        int segmentationCount;
+//        double pixelDistance, closestPixelDistance;
+//        SegLabel neighbour, mostSimilarNeighbour;
+//
+//        chromosome.segmentation.setLabelValue(0,0,0);
+//        segmentationCount = 1;
+//
+//        for (int x = 1; x <chromosome.segmentation.getWidth(); x++){
+//            pixelDistance = img.getPixel(x, 0).getPixelDistance(img.getPixel(x-1, 0));
+//            if(pixelDistance > distanceThreshold){
+//                segmentationCount += 1;
+//            }
+//            chromosome.segmentation.setLabelValue(x,0, segmentationCount);
+//        }
+//
+//        for (int y = 1; y < chromosome.segmentation.getHeight(); y++){
+//            for (int x = 0; x < chromosome.segmentation.getWidth(); x++){
+//                mostSimilarNeighbour = null;
+//                closestPixelDistance = Math.sqrt(3);
+//                for(int neighbourNr = 0; neighbourNr < chromosome.segmentation.getWidth(); neighbourNr++){
+//                    neighbour = chromosome.segmentation.getLabel(neighbourNr,y-1);
+//                    if (neighbour != null && neighbour.label != -1){
+//                        pixelDistance = img.getPixel(x,y).getPixelDistance(img.getPixel(neighbour));
+//                        if (pixelDistance < closestPixelDistance && pixelDistance < distanceThreshold){
+//                            closestPixelDistance = pixelDistance;
+//                            mostSimilarNeighbour = neighbour;
+//                        }
+//                    }
+//                }
+//                if (mostSimilarNeighbour != null){
+//                    chromosome.segmentation.setLabelValue(x, y, mostSimilarNeighbour.label);
+//                }
+//                else {
+//                    chromosome.segmentation.setLabelValue(x, y, segmentationCount);
+//                    segmentationCount += 1;
+//                }
+//            }
+//        }
+//        return chromosome;
+//    }

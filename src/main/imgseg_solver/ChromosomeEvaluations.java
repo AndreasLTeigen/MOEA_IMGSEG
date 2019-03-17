@@ -20,20 +20,24 @@ public class ChromosomeEvaluations {
         return (float)Math.sqrt( rDiff*rDiff + gDiff*gDiff + bDiff*bDiff );
     }
 
-    public static float overallDeviation(Chromosome chrom) {
-        Image img = chrom.img;
-        List<List<SegLabel>> segments = chrom.segmentation.getSegmentations();
+    public static float overallDeviation(Segmentation seg, Image img) {
+        List<List<SegLabel>> segments = seg.getSegmentations();
 
         float totDist = 0;
-        for (List<SegLabel> seg : segments) {
+        for (List<SegLabel> segment : segments) {
 
             //find the centroid
             //only by coordinates
-            float cx = (float)seg.stream().mapToDouble(l -> chrom.img.getPixel(l).x).sum() / seg.size();
-            float cy = (float)seg.stream().mapToDouble(l -> chrom.img.getPixel(l).y).sum() / seg.size();
-            Pixel centroid = chrom.img.getPixel((int)cx, (int)cy);
+            //TODO: centroids should be by color!
+//            float cx = (float)segment.stream().mapToDouble(l -> img.getPixel(l).x).sum() / segment.size();
+//            float cy = (float)segment.stream().mapToDouble(l -> img.getPixel(l).y).sum() / segment.size();
+//            Pixel centroid = img.getPixel((int)cx, (int)cy);
+            float cr = (float)segment.stream().mapToDouble(l -> img.getPixel(l).r).sum() / segment.size();
+            float cg = (float)segment.stream().mapToDouble(l -> img.getPixel(l).g).sum() / segment.size();
+            float cb = (float)segment.stream().mapToDouble(l -> img.getPixel(l).b).sum() / segment.size();
+            Pixel centroid = new Pixel(cr, cg, cb, -1, -1);
 
-            float totSegDist = (float)seg.stream()
+            float totSegDist = (float)segment.stream()
                     .mapToDouble(l -> colorDist(img.getPixel(l), centroid)).sum();
             //this is apparently not a part of the calculationfloat segDist = totSegDist / seg.size();
             totDist += totSegDist;
@@ -43,10 +47,8 @@ public class ChromosomeEvaluations {
 
 
 
-    public static float connectivity(Chromosome chrom) {
-        int neighbourhoodSize = 1;
-
-        Segmentation seg = chrom.segmentation;
+    public static float connectivity(Segmentation seg) {
+        int neibourhoodDepth = 1;
 
         float connectivity = (float)seg.stream().mapToDouble(lab -> {
 
@@ -59,7 +61,7 @@ public class ChromosomeEvaluations {
             nLabels.get(0).add(lab);
 
             //add all labels of neighbours, recursively until depth is exceeded
-            IntStream.range(0, neighbourhoodSize).forEach( nn -> {
+            IntStream.range(0, neibourhoodDepth).forEach( nn -> {
                 //get neighbours of the outer neighbourhood of depth
                 Set<SegLabel> currNeighbourhood = nLabels.get(nLabels.size() -1);
                 Set<SegLabel> newNeighbourhood = currNeighbourhood.stream()
@@ -73,12 +75,16 @@ public class ChromosomeEvaluations {
                 nLabels.add(newNeighbourhood);
             });
 
+            int nbourCount = nLabels.size();
+
+//            System.err.println("connectivity neighbour count: " + nbourCount);
+
             //get the connectivity of all neighbourhood labels.
             //start at 1 to not get the currLabel
             double segConnectivity = IntStream.range(1, nLabels.size())
                     .mapToDouble(i ->
                         nLabels.get(i).stream()
-                                .mapToDouble(l -> labelConnectivity(lab, l, i)) //get the connectivity of each neighbour
+                                .mapToDouble(l -> labelConnectivity(lab, l, nbourCount)) //get the connectivity of each neighbour
                                 .sum()
                     )
                     .sum();
@@ -90,9 +96,8 @@ public class ChromosomeEvaluations {
         return connectivity;
     }
 
-    private static float labelConnectivity(SegLabel currLabel, SegLabel nLabel, int neighbourDepth) {
-        return (currLabel.label != nLabel.label) ? 0 :
-                1.0f / neighbourDepth;
+    private static float labelConnectivity(SegLabel currLabel, SegLabel nLabel, int neighbourCount) {
+        return (currLabel.label != nLabel.label)? 1.0f / neighbourCount : 0;
     }
 
 }

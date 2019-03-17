@@ -8,44 +8,54 @@ import java.util.NoSuchElementException;
 
 public class GeneticSolver {
 
-    public int popSize = 10;
-
-
     protected PopulationInitializer populationInitializer = null;
-    protected Evaluator evaluator= null;
+//    protected Evaluator evaluator= null;
     protected ParentSelector parentSelector= null;
     protected CrossoverPopulation crossPop= null;
     protected MutatePopulation mutatePop= null;
-    protected GenerationSelector generationSelector= null;
+//    protected GenerationSelector generationSelector= null;
     protected TerminateCondition terminateCondition= null;
 
+    protected SolverListener listener = new EmptySolverListener();
 
-    public void solve(Problem p) {
 
-        Population pop = null;
-        Population parents = null;
-        Population children = null;
+    public void solve() {
 
-        pop = populationInitializer.initPopulation(p, popSize);
-        List<Evaluation> evaluations = evaluator.evaluate(pop);
+        Population pop = new Population();
+        Population parents = new Population();
+        Population children = new Population();
+        Population mutatedChildren = new Population();
 
-        float bestFitness = bestEval(evaluations);
+        pop = populationInitializer.initPopulation();
+        listener.populationInit(pop);
+
+//        float bestFitness = bestEval(evaluations);
 
         int iteration = 0;
-        while (!terminateCondition.shouldTerminate(iteration, bestFitness, pop)) {
+        while (!terminateCondition.shouldTerminate(iteration, pop)) {
+            listener.iterationStart(iteration, parents, pop);
 
-            parents = parentSelector.selectParents(pop, children); //TODO: Check children validity
+            parents = parentSelector.selectParents(parents, pop); //TODO: Check children validity
+            listener.selectedParents(parents);
 
             //performs any number of crossovers and mutations on any number of parents
             children = crossPop.crossoverPopulation(parents);
-            children = mutatePop.mutatePopulation(children);
+            listener.crossedParents(parents, children);
+
+            mutatedChildren = mutatePop.mutatePopulation(children);
+            listener.mutatedChildren(children, mutatedChildren);
+
+            pop = mutatedChildren;
 
             //elitism may be baked into this
-            pop = generationSelector.selectNextGeneration(children, pop);
+//            pop = generationSelector.selectNextGeneration(children, pop);
 
-            System.out.println("Iteration" + iteration);
+            listener.iterationEnd(iteration, parents, children);
+
             ++iteration;
         }
+
+        listener.solverEnd(iteration, parents, pop);
 
     }
 

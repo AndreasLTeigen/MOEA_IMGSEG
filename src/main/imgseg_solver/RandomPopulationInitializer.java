@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 public class RandomPopulationInitializer implements PopulationInitializer {
 
     public static Chromosome createRandomChromosome(Problem p) {
-        Chromosome c = new Chromosome(p.img);
-        Segmentation seg = c.segmentation;
+//        Chromosome c = new Chromosome(p.img);
+        Segmentation seg = new Segmentation(p.img);
 
         //scramble segmentation
         int nextLabel = 0;
@@ -84,12 +84,15 @@ public class RandomPopulationInitializer implements PopulationInitializer {
             }
         });
 
-
-        return c;
+//TODO: convert segmentation to graphSeg
+        return null;
     }
 
+    private Problem p;
+    private int populationSize;
+
     @Override
-    public Population initPopulation(Problem p, int populationSize) {
+    public Population initPopulation() {
         List<Chromosome> cs = new ArrayList<>(populationSize);
         for (int i = 0; i < populationSize; i++) {
             cs.add(createRandomChromosome(p));
