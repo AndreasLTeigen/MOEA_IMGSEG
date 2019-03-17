@@ -244,6 +244,10 @@ public class SegUtils {
                         .collect(Collectors.toList())
                 )
                 .collect(Collectors.toList());
+
+        Map<GraphSegNode, List<GraphSegNode>> segmentOfNode = new HashMap<>();
+        gsegments.forEach(segment -> segment.forEach(n -> segmentOfNode.put(n ,segment)));
+
 //        gsegments = new ArrayList<>();
 //        gsegments.add(new ArrayList<>(gseg.getAllNodes()));
 
@@ -253,6 +257,7 @@ public class SegUtils {
 
         int i = 0;
         for (List<GraphSegNode> segment : gsegments) {
+
             System.out.println("Starting segment " + ++i);
             GraphSegNode startNode = segment.get(0);
 //            GraphSegNode startNode = segment.get(Utils.randRange(0, segment.size()));
@@ -315,7 +320,8 @@ public class SegUtils {
                 //concider neighbours
                 gseg.getNonDiagonalNeighbours(currNodeEdge.toNode).stream()
                         .filter(Objects::nonNull)
-                        .filter(nbour -> segment.contains(nbour)) //make sure the neighbour belongs to the same segment
+                        .filter(nbour -> segmentOfNode.get(nbour) == segmentOfNode.get(currNodeEdge.toNode))
+//                        .filter(nbour -> segment.contains(nbour)) //make sure the neighbour belongs to the same segment
                         .filter(nbour -> nbour.next == NULL_NODE) //filter out assigned nodes
                         .forEach(nbour -> concideredNodes.add(new NodeEdge(currNodeEdge.toNode, nbour, img)));
 
