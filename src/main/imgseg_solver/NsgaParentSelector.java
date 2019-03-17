@@ -497,6 +497,7 @@ public class NsgaParentSelector implements ParentSelector {
         Chromosome printChrom = firstFront.get(Utils.randRange(0, firstFront.size()));
         IsegImageIO.drawGraphSeg(printChrom.graphSeg);
 
+
         System.out.println("population before reduction: "+ allPop.chromosones.size());
         Population pop = selectBest(allPop, rankedFronts);
         System.out.println("population after reduction: " + pop.chromosones.size());

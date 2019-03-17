@@ -30,8 +30,8 @@ public class Main{
 //        System.out.println("original segments; " + seg1.getSegmentations().size());
 //        System.out.println("copy segments: " + seg2.getSegmentations().size());
 
-        chrom.computeObjectives();
-        IsegImageIO.saveSegmentation(chrom);
+//        chrom.computeObjectives();
+//        IsegImageIO.saveSegmentation(chrom);
 
         IsegImageIO.drawImage(img);
 
@@ -41,7 +41,7 @@ public class Main{
         solver.iterations = 200;
 
         solver.init();
-//        solver.solve();
+        solver.solve();
 
 //        int chromCount = 10;
 
