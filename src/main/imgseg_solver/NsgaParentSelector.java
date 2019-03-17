@@ -286,7 +286,9 @@ public class NsgaParentSelector implements ParentSelector {
             otherObjectiveNr = 1;
         }
 
-        for (int i = 0; i < chromosomeObjective.size(); i++){
+        equalValue.add(chromosomeObjective.get(0));
+        System.out.println("equalValue.size(); "+ equalValue.size());
+        for (int i = 1; i < chromosomeObjective.size(); i++){
             if (equalValue.get(equalValue.size()-1).sortValue != chromosomeObjective.get(i).sortValue){
                 if ( equalValue.size() > 1){
                     //sort the equal values
@@ -296,18 +298,23 @@ public class NsgaParentSelector implements ParentSelector {
                     }
                     Collections.sort(otherChromosomeObjective);
                     for(int j = 0; j < otherChromosomeObjective.size(); j++){
+                        System.out.println();
+                        System.out.println("i: " + i);
+                        System.out.println("j: " + j);
+                        System.out.println("otherChromosomeObjective.size(): " + otherChromosomeObjective.size());
+                        System.out.println("chromosomeObjective.size(): " + chromosomeObjective.size());
+                        System.out.println("Sum: " + (i - otherChromosomeObjective.size() + 1 + j));
                         chromosomeObject = new Pair(otherChromosomeObjective.get(j).chromosome, otherChromosomeObjective.get(j).chromosome.objectiveValues.get(objectiveNr));
-                        chromosomeObjective.set(i - otherChromosomeObjective.size() + 1, chromosomeObject);
+                        chromosomeObjective.set(i - otherChromosomeObjective.size() + 1 + j, chromosomeObject);
                     }
+                    otherChromosomeObjective = new ArrayList<>();
+                    equalValue = new ArrayList<>();
                 }
                 else{
                     equalValue.remove(0);
-                    equalValue.add(chromosomeObjective.get(i));
                 }
             }
-            if(equalValue.get(equalValue.size()-1).sortValue == chromosomeObjective.get(i).sortValue){
-                equalValue.add(chromosomeObjective.get(i));
-            }
+            equalValue.add(chromosomeObjective.get(i));
         }
         return chromosomeObjective;
     }
