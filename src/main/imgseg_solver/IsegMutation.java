@@ -14,11 +14,12 @@ public class IsegMutation implements MutatePopulation {
         List<Chromosome> mutatedChroms = pop.chromosones.stream().map(c -> c.clone()).collect(Collectors.toList());
 
         mutatedChroms.forEach(c -> {
-            if (Math.random() < 0.2)
+            if (Math.random() < 0.5)
                 return;
 
-            int maxMutationCount = Utils.randRange(0, 1000);
-            SimpleMutation.doSimpleMutation(maxMutationCount, c);
+            //int maxMutationCount = Utils.randRange(0, 1000);
+            SimpleMutation.doSimpleMutation(50, c);
+            c.computeObjectives();
         });
 
         return new Population(mutatedChroms);

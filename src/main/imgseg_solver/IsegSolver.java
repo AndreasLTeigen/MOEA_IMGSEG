@@ -22,7 +22,7 @@ public class IsegSolver extends GeneticSolver {
 
         parentSelector = new NsgaParentSelector(populationSize);
         crossPop = new IsegCrossover();
-        mutatePop = p -> p; //new IsegMutation(); //no mutations, returns the given population
+        mutatePop = new IsegMutation(); //no mutations, returns the given population
 
         terminateCondition = new IterationTermination(iterations);
 

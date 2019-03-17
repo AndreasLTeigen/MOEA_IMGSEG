@@ -6,6 +6,7 @@ import imgseg_solver.ChromosomeEvaluations;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Chromosome {
     public GraphSeg graphSeg;
@@ -49,7 +50,10 @@ public class Chromosome {
     }
 
     public Chromosome clone(){
-        return new Chromosome(img, graphSeg.clone());
+
+        Chromosome chromosome = new Chromosome(img, graphSeg.clone());
+        chromosome.objectiveValues = new ArrayList<>(objectiveValues);
+        return chromosome;
     }
 
 
