@@ -2,11 +2,18 @@ package imgseg_solver;
 
 import imgseg_representation.*;
 import solver.PopulationInitializer;
+import utils.Utils;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
 public class HeuristicPopulationInitializer implements PopulationInitializer {
+
+    public static Chromosome RandomHeuristicInitializer(Problem p, int minBins, int maxBins, int minSmallestSegmentSize, int maxSmallestSegmentSize){
+        int numBins = Utils.randRange(minBins, maxBins);
+        int smallestSegmentSize = Utils.randRange(minSmallestSegmentSize, maxSmallestSegmentSize);
+        return HeuristicInitializer(p,numBins,smallestSegmentSize);
+    }
 
 
 
@@ -390,12 +397,18 @@ public class HeuristicPopulationInitializer implements PopulationInitializer {
 
     @Override
     public Population initPopulation() {
-        int binCount = 3;
-        int smallestSegmentSize = 1000;
+        int binCount;// = 3;
+        int smallestSegmentSize;// = 1000;
+        int minBins = 2;
+        int maxBins = 5;
+        int minSmallestSegmentSize = 400;
+        int maxSmallestSegmentSize = 1700;
 
         Population pop = new Population();
 
         for (int i = 0; i < popSize; i++) {
+            binCount = Utils.randRange(minBins, maxBins);
+            smallestSegmentSize = Utils.randRange(minSmallestSegmentSize, maxSmallestSegmentSize);
             Chromosome c = HeuristicPopulationInitializer.HeuristicInitializer(p, binCount, smallestSegmentSize);
             c.computeObjectives();
 

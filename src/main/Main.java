@@ -39,7 +39,7 @@ public class Main{
         solver.iterations = 200;
 
         solver.init();
-//        solver.solve();
+        solver.solve();
 
 //        int chromCount = 10;
 

@@ -25,7 +25,7 @@ public class UniformCrossover {
             for (int x = 0; x < children.get(0).img.getWidth(); x++){
 
                 Random randomFloat = new Random();
-                if(randomFloat.nextFloat() < 0.5 ){
+                if(randomFloat.nextFloat() < 0.03 ){
 
                     node1 = children.get(0).graphSeg.getNode(x,y);
                     neighbours1 = children.get(0).graphSeg.getNeighbours(x,y);
@@ -62,8 +62,6 @@ public class UniformCrossover {
                 }
             }
         }
-
-        children.forEach(c -> c.computeObjectives());
         return children;
     }
 }
