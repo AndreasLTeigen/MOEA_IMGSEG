@@ -1,6 +1,7 @@
 package  imgseg_solver;
 
 import imgseg_representation.Problem;
+import simple_GA.WeightedObjectives;
 import solver.*;
 import solver_utils.IterationTermination;
 
@@ -20,7 +21,8 @@ public class IsegSolver extends GeneticSolver {
     public void init() {
         populationInitializer = new HeuristicPopulationInitializer(problem, populationSize);
 
-        parentSelector = new NsgaParentSelector(populationSize);
+        //parentSelector = new NsgaParentSelector(populationSize);
+        parentSelector = new WeightedObjectives(populationSize, 0.2f, 0.8f);
         crossPop = new IsegCrossover();
         mutatePop = new IsegMutation(); //no mutations, returns the given population
 

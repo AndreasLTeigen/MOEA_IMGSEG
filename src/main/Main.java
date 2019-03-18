@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 public class Main{
     public static void main(String[] args){
 
-        Image img = IsegImageIO.loadImage("images/147091/Test image.jpg");
+        Image img = IsegImageIO.loadImage("images/160068/Test image.jpg");
         Problem p = new Problem(img);
 
         Chromosome chrom = HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000);
@@ -31,13 +31,13 @@ public class Main{
 //        System.out.println("copy segments: " + seg2.getSegmentations().size());
 
         chrom.computeObjectives();
-        IsegImageIO.saveSegmentation(chrom);
+//        IsegImageIO.saveSegmentation(chrom);
 
         IsegImageIO.drawImage(img);
 
 
         IsegSolver solver = new IsegSolver(p);
-        solver.populationSize = 10;
+        solver.populationSize = 20;
         solver.iterations = 200;
 
         solver.init();

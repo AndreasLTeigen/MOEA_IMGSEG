@@ -1,6 +1,7 @@
 package imgseg_solver;
 
 import graphics.Plot;
+import imgseg_representation.IsegImageIO;
 import imgseg_representation.Population;
 import imgseg_representation.Problem;
 import solver.SolverListener;
@@ -21,6 +22,7 @@ public class IsegSolverListener implements SolverListener {
     @Override
     public void populationInit(Population pop) {
         System.out.println("population inited");
+        pop.chromosones.forEach(c -> IsegImageIO.saveSegmentation(c));
     }
 
     @Override
