@@ -21,8 +21,9 @@ public class IsegSolver extends GeneticSolver {
     public void init() {
         populationInitializer = new HeuristicPopulationInitializer(problem, populationSize);
 
-        //parentSelector = new NsgaParentSelector(populationSize);
-        parentSelector = new WeightedObjectives(populationSize, 0.2f, 0.8f);
+//        parentSelector = new NsgaParentSelector(populationSize);
+        parentSelector = new WeightedObjectives(populationSize, 0.2f,0.7f);
+//        parentSelector = new WeightedObjectives(populationSize, 0.9999999999f,0.0000000001f);
         crossPop = new IsegCrossover();
         mutatePop = p -> p;//new IsegMutation(); //no mutations, returns the given population
 

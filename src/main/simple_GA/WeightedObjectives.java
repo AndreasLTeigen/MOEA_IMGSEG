@@ -44,6 +44,8 @@ public class WeightedObjectives implements ParentSelector {
     private Plot generationPlot = new Plot();
 
     public WeightedObjectives(int populationSize, float w1, float w2){
+        this.w1 = w1;
+        this.w2 = w2;
         this.populationSize = populationSize;
     }
 
@@ -60,10 +62,12 @@ public class WeightedObjectives implements ParentSelector {
         childPopulation.chromosones = childChromosomePopulation;
 
         //draw best child
-        IsegImageIO.saveSegmentation(childChromosomePopulation.get(0));
+        IsegImageIO.drawCharomosome(childChromosomePopulation.get(0));
 
         //plot objectives of best child
         generationPlot.addParetoFront(Arrays.asList(childChromosomePopulation.get(0)));
+
+        System.out.println("chosen parents: " + childPopulation.chromosones.size());
 
         return childPopulation;
     }

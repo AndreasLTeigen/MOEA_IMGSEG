@@ -46,8 +46,10 @@ public class IsegImageIO {
         Image img = createImageOfSegmentationType2(seg);
         Image img2 = createSegmentedImage(chrom.img, seg);
 
+        int segmentCount = seg.getSegmentations().size();
 
-        String filename = "overalldev_" + chrom.objectiveValues.get(Chromosome.overallDeviationIndex)
+        String filename = "segments_"+segmentCount
+                +"_overalldev_" + chrom.objectiveValues.get(Chromosome.overallDeviationIndex)
                 +"_connect_" + chrom.objectiveValues.get(Chromosome.connectivityIndex)
                 +".png";
         saveImage(img2, folder + "type1_" + filename);
@@ -57,8 +59,10 @@ public class IsegImageIO {
         Segmentation seg = SegUtils.getSegRepresentation(chrom.graphSeg);
         Image img = createImageOfSegmentationType2(seg);
 
+        int segmentCount = seg.getSegmentations().size();
 
-        String filename = "overalldev_" + chrom.objectiveValues.get(Chromosome.overallDeviationIndex)
+        String filename = "segments_"+segmentCount
+                +"_overalldev_" + chrom.objectiveValues.get(Chromosome.overallDeviationIndex)
                 +"_connect_" + chrom.objectiveValues.get(Chromosome.connectivityIndex)
                 +".png";
         saveImage(img, folder + "type2_" + filename);

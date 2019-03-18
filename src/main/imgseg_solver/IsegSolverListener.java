@@ -5,6 +5,7 @@ import imgseg_representation.Chromosome;
 import imgseg_representation.IsegImageIO;
 import imgseg_representation.Population;
 import imgseg_representation.Problem;
+import simple_GA.WeightedObjectives;
 import solver.GeneticSolver;
 import solver.SolverListener;
 
@@ -58,6 +59,19 @@ public class IsegSolverListener implements SolverListener {
 
     @Override
     public void solverEnd(int iteration, Population parents, Population pop, GeneticSolver solver) {
+        if (solver.parentSelector instanceof WeightedObjectives) {
+            WeightedObjectives wo = (WeightedObjectives) solver.parentSelector;;
+
+            Population bestPop = wo.selectParents(parents, pop);
+
+            bestPop.chromosones.forEach(c -> {
+                IsegImageIO.saveSegmentation(c);
+                IsegImageIO.saveSegmentationToEval(c);
+            });
+
+            return;
+        }
+
         Population allPop = new Population();
         allPop.chromosones.addAll(parents.chromosones);
         allPop.chromosones.addAll(pop.chromosones);

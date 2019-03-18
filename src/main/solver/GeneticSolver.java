@@ -10,7 +10,7 @@ public class GeneticSolver {
 
     protected PopulationInitializer populationInitializer = null;
 //    protected Evaluator evaluator= null;
-    protected ParentSelector parentSelector= null;
+    public ParentSelector parentSelector= null;
     protected CrossoverPopulation crossPop= null;
     protected MutatePopulation mutatePop= null;
 //    protected GenerationSelector generationSelector= null;
@@ -35,7 +35,7 @@ public class GeneticSolver {
         while (!terminateCondition.shouldTerminate(iteration, pop)) {
             listener.iterationStart(iteration, parents, pop);
 
-            parents = parentSelector.selectParents(parents, pop); //TODO: Check children validity
+            parents = parentSelector.selectParents(parents, pop);
             listener.selectedParents(parents);
 
             //performs any number of crossovers and mutations on any number of parents
