@@ -26,9 +26,10 @@ public class Main{
     }
 
     public static void main(String[] args){
-
+        
+        Image img = IsegImageIO.loadImage("images/160068/Test image.jpg");
 //        Image img = loadImage("147091");
-        Image img = loadImage("160068");
+        //Image img = loadImage("160068");
         Problem p = new Problem(img);
 
 //        Chromosome chrom = HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000);
@@ -47,6 +48,7 @@ public class Main{
 
 
         IsegSolver solver = new IsegSolver(p);
+
         solver.populationSize = 10;
         solver.iterations = 20;
 

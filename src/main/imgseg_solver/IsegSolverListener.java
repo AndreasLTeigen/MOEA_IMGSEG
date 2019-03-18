@@ -26,6 +26,7 @@ public class IsegSolverListener implements SolverListener {
     @Override
     public void populationInit(Population pop) {
         System.out.println("population inited");
+        pop.chromosones.forEach(c -> IsegImageIO.saveSegmentation(c));
     }
 
     @Override
