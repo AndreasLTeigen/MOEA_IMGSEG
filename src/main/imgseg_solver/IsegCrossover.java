@@ -24,7 +24,7 @@ public class IsegCrossover implements CrossoverPopulation {
             childs.addAll(UniformCrossover.doUniformCrossover(chrom1, chrom2));
         }
 
-
+        childs.forEach(c -> c.computeObjectives());
 
         return new Population(childs);
     }

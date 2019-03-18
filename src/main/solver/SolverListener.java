@@ -12,6 +12,6 @@ public interface SolverListener {
     void crossedParents(Population parents, Population children);
     void mutatedChildren(Population prevChildren, Population mutatedChildren);
     void iterationEnd(int iteration, Population parents, Population pop);
-    void solverEnd(int iteration, Population parents, Population pop);
+    void solverEnd(int iteration, Population parents, Population pop, GeneticSolver solver);
 
 }

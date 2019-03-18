@@ -31,16 +31,37 @@ public class IsegImageIO {
         return img;
     }
 
+
+    public static void saveSegmentationToEval(Chromosome chrom) {
+        String folder = "../Segmentation_Evaluation/Student_Segmentation_Files/";
+        saveSegmentationToFolderOnlyType2(chrom, folder);
+    }
     public static void saveSegmentation(Chromosome chrom) {
+        String folder = "./outImages/";
+        saveSegmentationToFolder(chrom, folder);
+    }
+
+    private static void saveSegmentationToFolder(Chromosome chrom, String folder) {
         Segmentation seg = SegUtils.getSegRepresentation(chrom.graphSeg);
         Image img = createImageOfSegmentationType2(seg);
         Image img2 = createSegmentedImage(chrom.img, seg);
 
+
         String filename = "overalldev_" + chrom.objectiveValues.get(Chromosome.overallDeviationIndex)
                 +"_connect_" + chrom.objectiveValues.get(Chromosome.connectivityIndex)
                 +".png";
-        saveImage(img2, "type1_" + filename);
-        saveImage(img, "type2_" + filename);
+        saveImage(img2, folder + "type1_" + filename);
+        saveImage(img, folder + "type2_" + filename);
+    }
+    private static void saveSegmentationToFolderOnlyType2(Chromosome chrom, String folder) {
+        Segmentation seg = SegUtils.getSegRepresentation(chrom.graphSeg);
+        Image img = createImageOfSegmentationType2(seg);
+
+
+        String filename = "overalldev_" + chrom.objectiveValues.get(Chromosome.overallDeviationIndex)
+                +"_connect_" + chrom.objectiveValues.get(Chromosome.connectivityIndex)
+                +".png";
+        saveImage(img, folder + "type2_" + filename);
     }
 
     public static void drawCharomosome(Chromosome c) {
@@ -71,10 +92,10 @@ public class IsegImageIO {
         g.drawImage(another, 0, 0, null);
     }
 
-    private static void saveImage(Image img, String filename) {
+    private static void saveImage(Image img, String path) {
         BufferedImage buffImg = convertToBufferedImage(img);
         try {
-            ImageIO.write(buffImg, "png", new File("./outImages/" + filename));
+            ImageIO.write(buffImg, "png", new File(path));
         } catch (IOException e) {
             e.printStackTrace();
         }

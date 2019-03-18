@@ -494,12 +494,11 @@ public class NsgaParentSelector implements ParentSelector {
         //draw fronts
         List<Chromosome> firstFront = rankedFronts.get(0);
         generationPlot.addParetoFront(firstFront);//.stream().flatMap(f -> f.stream()).collect(Collectors.toList()));
+
         Chromosome printChrom = firstFront.get(Utils.randRange(0, firstFront.size()));
         IsegImageIO.drawGraphSeg(printChrom.graphSeg);
 
-        System.out.println("population before reduction: "+ allPop.chromosones.size());
         Population pop = selectBest(allPop, rankedFronts);
-        System.out.println("population after reduction: " + pop.chromosones.size());
 
         return pop;//tournamentSelection(pop);
     }

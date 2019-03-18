@@ -40,8 +40,9 @@ public class EmptySolverListener implements SolverListener {
     }
 
     @Override
-    public void solverEnd(int iteration, Population parents, Population pop) {
+    public void solverEnd(int iteration, Population parents, Population pop, GeneticSolver solver) {
 
     }
+
 
 }

@@ -62,6 +62,8 @@ public class UniformCrossover {
                 }
             }
         }
+
+
         return children;
     }
 }
