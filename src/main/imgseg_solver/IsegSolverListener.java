@@ -1,9 +1,14 @@
 package imgseg_solver;
 
 import graphics.Plot;
+import imgseg_representation.Chromosome;
+import imgseg_representation.IsegImageIO;
 import imgseg_representation.Population;
 import imgseg_representation.Problem;
+import solver.GeneticSolver;
 import solver.SolverListener;
+
+import java.util.List;
 
 public class IsegSolverListener implements SolverListener {
 
@@ -51,7 +56,19 @@ public class IsegSolverListener implements SolverListener {
     }
 
     @Override
-    public void solverEnd(int iteration, Population parents, Population pop) {
+    public void solverEnd(int iteration, Population parents, Population pop, GeneticSolver solver) {
+        Population allPop = new Population();
+        allPop.chromosones.addAll(parents.chromosones);
+        allPop.chromosones.addAll(pop.chromosones);
+
+        List<List<Chromosome>> rankedFronts = NsgaParentSelector.nondominatedSort(allPop);
+
+        List<Chromosome> paretoFront = rankedFronts.get(0);
+        paretoFront.forEach(c -> {
+            IsegImageIO.saveSegmentation(c);
+            IsegImageIO.saveSegmentationToEval(c);
+        });
+
 
     }
 }

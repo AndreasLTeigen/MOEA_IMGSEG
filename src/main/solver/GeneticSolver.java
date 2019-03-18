@@ -55,7 +55,7 @@ public class GeneticSolver {
             ++iteration;
         }
 
-        listener.solverEnd(iteration, parents, pop);
+        listener.solverEnd(iteration, parents, pop, this);
 
     }
 

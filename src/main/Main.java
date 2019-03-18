@@ -9,6 +9,10 @@ import imgseg_solver.RandomPopulationInitializer;
 import solver.GeneticSolver;
 import imgseg_solver.NsgaParentSelector;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,12 +20,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main{
+
+    private static Image loadImage(String imgNumb) {
+        return IsegImageIO.loadImage("images/"+imgNumb+"/Test image.jpg");
+    }
+
     public static void main(String[] args){
 
-        Image img = IsegImageIO.loadImage("images/147091/Test image.jpg");
+//        Image img = loadImage("147091");
+        Image img = loadImage("160068");
         Problem p = new Problem(img);
 
-        Chromosome chrom = HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000);
+//        Chromosome chrom = HeuristicPopulationInitializer.HeuristicInitializer(p, 3, 1000);
 //        Chromosome chromCopy = chrom.clone();
 //        IsegImageIO.drawGraphSeg(chrom.graphSeg);
 //        IsegImageIO.drawGraphSeg(chromCopy.graphSeg);
@@ -31,14 +41,14 @@ public class Main{
 //        System.out.println("copy segments: " + seg2.getSegmentations().size());
 
 //        chrom.computeObjectives();
-//        IsegImageIO.saveSegmentation(chrom);
+//        IsegImageIO.saveSegmentationToEval(chrom);
 
         IsegImageIO.drawImage(img);
 
 
         IsegSolver solver = new IsegSolver(p);
         solver.populationSize = 10;
-        solver.iterations = 200;
+        solver.iterations = 20;
 
         solver.init();
         solver.solve();
