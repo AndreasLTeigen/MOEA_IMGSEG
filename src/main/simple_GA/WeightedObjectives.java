@@ -1,5 +1,6 @@
 package simple_GA;
 
+import graphics.Plot;
 import imgseg_representation.Chromosome;
 import imgseg_representation.Image;
 import imgseg_representation.Pair;
@@ -7,10 +8,7 @@ import imgseg_representation.Population;
 import imgseg_representation.IsegImageIO;
 import solver.ParentSelector;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class WeightedObjectives implements ParentSelector {
 
@@ -28,7 +26,7 @@ public class WeightedObjectives implements ParentSelector {
             chromosomeFittnesses.add(chromosomeFittness);
         }
         Collections.sort(chromosomeFittnesses);
-        Collections.reverse(chromosomeFittnesses);
+//        Collections.reverse(chromosomeFittnesses);
 
         for(Pair child: chromosomeFittnesses){
             childPopulation.add(child.chromosome);
@@ -37,14 +35,13 @@ public class WeightedObjectives implements ParentSelector {
             }
         }
 
-        IsegImageIO.saveSegmentation(childPopulation.get(0));
-
         return childPopulation;
     }
 
     public int populationSize;
     public  float w1;
     public float w2;
+    private Plot generationPlot = new Plot();
 
     public WeightedObjectives(int populationSize, float w1, float w2){
         this.populationSize = populationSize;
@@ -61,6 +58,12 @@ public class WeightedObjectives implements ParentSelector {
         List<Chromosome> childChromosomePopulation = new ArrayList<>();
         childChromosomePopulation = simpleParentSelection (allPop, this.w1, this.w2, this.populationSize);
         childPopulation.chromosones = childChromosomePopulation;
+
+        //draw best child
+        IsegImageIO.saveSegmentation(childChromosomePopulation.get(0));
+
+        //plot objectives of best child
+        generationPlot.addParetoFront(Arrays.asList(childChromosomePopulation.get(0)));
 
         return childPopulation;
     }
