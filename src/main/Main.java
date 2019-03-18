@@ -50,7 +50,7 @@ public class Main{
         IsegSolver solver = new IsegSolver(p);
 
         solver.populationSize = 10;
-        solver.iterations = 20;
+        solver.iterations = 10;
 
         solver.init();
         solver.solve();

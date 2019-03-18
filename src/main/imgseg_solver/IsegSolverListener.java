@@ -64,7 +64,7 @@ public class IsegSolverListener implements SolverListener {
 
             Population bestPop = wo.selectParents(parents, pop);
 
-            bestPop.chromosones.forEach(c -> {
+            bestPop.chromosones.subList(0, 1).forEach(c -> {
                 IsegImageIO.saveSegmentation(c);
                 IsegImageIO.saveSegmentationToEval(c);
             });

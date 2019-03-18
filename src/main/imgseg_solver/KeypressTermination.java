@@ -21,7 +21,7 @@ public class KeypressTermination implements TerminateCondition {
     @Override
     public boolean shouldTerminate(int iteration, Population pop) {
         if (iteration > iterations) {
-            return false;
+            return true;
         }
         try {
             if (br.ready()) {
